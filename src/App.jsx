@@ -1,5 +1,4 @@
 
-import './App.css';
 import { useState, useEffect } from 'react';
 
 function App() {
@@ -59,8 +58,8 @@ function App() {
           try {
             parsed = JSON.parse(result);
             console.log("parsed", parsed)
-            if(parsed?.ImageDataBase64) {
-              setImageBase64(parsed.ImageDataBase64);
+            if(parsed?.data?.ImageDataBase64) {
+              setImageBase64(ImageDataBase64);
             }
           } catch {
             setDeviceStatus('Capture returned invalid JSON.');
@@ -92,7 +91,7 @@ function App() {
         <button onClick={getDeviceInfo}>Get Device Info</button>
         <button onClick={initializeDevice} style={{ marginLeft: '10px', background: '#2980b9', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 14px' }}>Initialize Device</button>
         <button onClick={capture} style={{ marginLeft: '10px', background: '#27ae60', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 14px' }}>Capture</button>
-        <div style={{ marginTop: '15px', color: 'blue' }}>{deviceStatus}</div>
+        <div style={{ marginTop: '15px', color: 'dodgerblue' }}>{deviceStatus}</div>
         {initError && (
           <details style={{ marginTop: '10px', background: '#fff4f4', padding: '10px', borderRadius: '6px', border: '1px solid #e74c3c' }} open>
             <summary style={{ fontWeight: 'bold', color: '#e74c3c', cursor: 'pointer' }}>Device Initialization Error (click to expand/collapse)</summary>
