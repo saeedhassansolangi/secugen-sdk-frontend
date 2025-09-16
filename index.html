@@ -9,5 +9,14 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      window.addEventListener('fp:permissionRequested',e => console.log('fp:permissionRequested',e.detail));
+      window.addEventListener('fp:permissionGranted',e => console.log('fp:permissionGranted',e.detail));
+      window.addEventListener('fp:permissionDenied',e => console.info('fp:permissionDenied',e.detail));
+      window.addEventListener('fp:deviceDetached',e => console.log('fp:init',e.detail));
+      window.addEventListener('fp:error',e => console.log('fp:init',e.detail));
+      window.addEventListener('fp:noDevice',e => console.log('fp:init',e.detail));
+      window.addEventListener('fp:init',e => console.log('fp:init',e.detail));
+    </script>
   </body>
 </html>

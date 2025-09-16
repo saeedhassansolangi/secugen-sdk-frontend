@@ -21,16 +21,29 @@ function App() {
     }
   };
 
+  const [initError, setInitError] = useState(null);
   const initializeDevice = () => {
+    setInitError(null);
     if (window.Fingerprint && typeof window.Fingerprint.initializeDevice === 'function') {
       try {
-        window.Fingerprint.initializeDevice();
+        let response = window.Fingerprint.initializeDevice();
+        console.log("initializeDevice response", response);
+        response = JSON.parse(response);
+
+        if (response?.code !== 0) {
+          setDeviceStatus(response?.message || 'Error initializing device.');
+          setInitError(response);
+          return;
+        }
+
         setDeviceStatus('Device initialized!');
       } catch {
         setDeviceStatus('Error initializing device.');
+        setInitError({ message: 'Error initializing device.' });
       }
     } else {
       setDeviceStatus('Fingerprint API not available.');
+      setInitError({ message: 'Fingerprint API not available.' });
     }
   };
 
@@ -71,7 +84,6 @@ function App() {
 
   useEffect(() => {
     initializeDevice();
-    // eslint-disable-next-line
   }, []);
 
   return (
@@ -81,6 +93,12 @@ function App() {
         <button onClick={initializeDevice} style={{ marginLeft: '10px', background: '#2980b9', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 14px' }}>Initialize Device</button>
         <button onClick={capture} style={{ marginLeft: '10px', background: '#27ae60', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 14px' }}>Capture</button>
         <div style={{ marginTop: '15px', color: 'blue' }}>{deviceStatus}</div>
+        {initError && (
+          <details style={{ marginTop: '10px', background: '#fff4f4', padding: '10px', borderRadius: '6px', border: '1px solid #e74c3c' }} open>
+            <summary style={{ fontWeight: 'bold', color: '#e74c3c', cursor: 'pointer' }}>Device Initialization Error (click to expand/collapse)</summary>
+            <pre style={{ color: '#c0392b', fontSize: '1em', whiteSpace: 'pre-wrap', wordBreak: 'break-all', margin: 0 }}>{JSON.stringify(initError, null, 2)}</pre>
+          </details>
+        )}
         {deviceInfo && (
           <details style={{ marginTop: '10px', background: '#f4f4f4', padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} open>
             <summary style={{ fontWeight: 'bold', color: '#2d7a2d', cursor: 'pointer' }}>Device Info (click to collapse/expand)</summary>
