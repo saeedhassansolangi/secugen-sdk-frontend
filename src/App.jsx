@@ -5,9 +5,17 @@ function App() {
   const [deviceStatus, setDeviceStatus] = useState('');
   const [deviceInfo, setDeviceInfo] = useState('');
   const [imageBase64, setImageBase64] = useState('');
-
+  const [initError, setInitError] = useState(null);
+  const [fingerData, setFingerData] = useState(null);
+  const [loading, setLoading] = useState({ deviceInfo: false, initialize: false, capture: false });
 
   const getDeviceInfo = () => {
+    setLoading(l => ({ ...l, deviceInfo: true }));
+    setDeviceInfo('');
+    setDeviceStatus('');
+    setInitError(null);
+    setFingerData(null);
+    setImageBase64('');
     if (window.DeviceInfo && typeof window.DeviceInfo.getDeviceInfo === 'function') {
       try {
         const info = window.DeviceInfo.getDeviceInfo();
@@ -18,23 +26,26 @@ function App() {
     } else {
       setDeviceInfo('DeviceInfo API not available.');
     }
+    setLoading(l => ({ ...l, deviceInfo: false }));
   };
 
-  const [initError, setInitError] = useState(null);
   const initializeDevice = () => {
+    setLoading(l => ({ ...l, initialize: true }));
     setInitError(null);
+    setDeviceInfo('');
+    setDeviceStatus('');
+    setFingerData(null);
+    setImageBase64('');
     if (window.Fingerprint && typeof window.Fingerprint.initializeDevice === 'function') {
       try {
         let response = window.Fingerprint.initializeDevice();
-        console.log("initializeDevice response", response);
         response = JSON.parse(response);
-
         if (response?.code !== 0) {
           setDeviceStatus(response?.message || 'Error initializing device.');
           setInitError(response);
+          setLoading(l => ({ ...l, initialize: false }));
           return;
         }
-
         setDeviceStatus('Device initialized!');
       } catch {
         setDeviceStatus('Error initializing device.');
@@ -44,26 +55,30 @@ function App() {
       setDeviceStatus('Fingerprint API not available.');
       setInitError({ message: 'Fingerprint API not available.' });
     }
+    setLoading(l => ({ ...l, initialize: false }));
   };
 
-  const [fingerData, setFingerData] = useState(null);
-
   const capture = () => {
+    setLoading(l => ({ ...l, capture: true }));
+    setDeviceInfo('');
+    setDeviceStatus('');
+    setInitError(null);
+    setFingerData(null);
+    setImageBase64('');
     if (window.Fingerprint && typeof window.Fingerprint.captureFingerprint === 'function') {
       try {
         const result = window.Fingerprint.captureFingerprint("Timeout=10000&Quality=50&licstr=&templateFormat=ISO&imageWSQRate=0.75");
-        console.log("result", result)
         let parsed = null;
         if (typeof result === 'string' && result != null) {
           try {
             parsed = JSON.parse(result);
-            console.log("parsed", parsed)
             if(parsed?.data?.ImageDataBase64) {
-              setImageBase64(ImageDataBase64);
+              setImageBase64(parsed.data.ImageDataBase64);
             }
           } catch {
             setDeviceStatus('Capture returned invalid JSON.');
             setFingerData(null);
+            setLoading(l => ({ ...l, capture: false }));
             return;
           }
         } else if (typeof result === 'object' && result !== null) {
@@ -79,6 +94,7 @@ function App() {
       setDeviceStatus('Fingerprint API not available.');
       setFingerData(null);
     }
+    setLoading(l => ({ ...l, capture: false }));
   };
 
   useEffect(() => {
@@ -88,9 +104,15 @@ function App() {
   return (
     <>
       <div>
-        <button onClick={getDeviceInfo}>Get Device Info</button>
-        <button onClick={initializeDevice} style={{ marginLeft: '10px', background: '#2980b9', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 14px' }}>Initialize Device</button>
-        <button onClick={capture} style={{ marginLeft: '10px', background: '#27ae60', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 14px' }}>Capture</button>
+        <button onClick={getDeviceInfo} disabled={loading.deviceInfo}>
+          {loading.deviceInfo ? 'Loading...' : 'Get Device Info'}
+        </button>
+        <button onClick={initializeDevice} disabled={loading.initialize} style={{ marginLeft: '10px', background: '#2980b9', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 14px' }}>
+          {loading.initialize ? 'Initializing...' : 'Initialize Device'}
+        </button>
+        <button onClick={capture} disabled={loading.capture} style={{ marginLeft: '10px', background: '#27ae60', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 14px' }}>
+          {loading.capture ? 'Capturing...' : 'Capture'}
+        </button>
         <div style={{ marginTop: '15px', color: 'dodgerblue' }}>{deviceStatus}</div>
         {initError && (
           <details style={{ marginTop: '10px', background: '#fff4f4', padding: '10px', borderRadius: '6px', border: '1px solid #e74c3c' }} open>
