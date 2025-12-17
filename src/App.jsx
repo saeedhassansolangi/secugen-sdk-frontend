@@ -383,11 +383,11 @@ const handleRetry = () => {
             <h3 style={{ textAlign: "center", marginBottom: "8px", fontSize: "18px", color: "#2d3748", fontWeight: "700" }}>Select Finger</h3>
 
             {selectedFinger && (
-              <p style={{ textAlign: "center", fontSize: "13px", color: "#48bb78", marginBottom: "12px" }}>Selected: {fingerNames[selectedFinger]} {selectedFinger}}</p>
-            )  
-            }
+              <p style={{ textAlign: "center", fontSize: "13px", color: "#48bb78", marginBottom: "12px" }}>Selected: {fingerNames[selectedFinger]} {selectedFinger}</p>
+            )}
+            
             <p style={{ textAlign: "center", fontSize: "13px", color: "#718096", marginBottom: "20px" }}>Choose hand and tap the finger to scan</p>
-            <div style={{ display: "flex", justifyContent: "center", gap: 20, marginBottom: 20, fontSize: 14 }}>
+            <div style={{ display: "flex", justifyContent: "center", gap: 20, marginBottom: 20, fontSize: 12 }}>
               <label style={{ cursor: "pointer", padding: "8px 16px", background: hand === "right" ? "#667eea" : "#fff", color: hand === "right" ? "#fff" : "#4a5568", borderRadius: 8, fontWeight: 500, transition: "all 0.3s", border: "2px solid #667eea" }}>
                 <input
                   type="radio"
@@ -397,7 +397,7 @@ const handleRetry = () => {
                     setHand("right");
                     setSelectedFinger(null);
                   }}
-                  style={{ marginRight: 3 }}
+                  style={{ marginRight: 6 }}
                 />
                 Right Hand
               </label>
@@ -410,7 +410,7 @@ const handleRetry = () => {
                     setHand("left");
                     setSelectedFinger(null);
                   }}
-                  style={{ marginRight: 3 }}
+                  style={{ marginRight: 6 }}
                 />
                 Left Hand
               </label>
