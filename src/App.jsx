@@ -66,6 +66,7 @@ function App() {
   const [modalMessage, setModalMessage] = useState('');
   const [isCapturing, setIsCapturing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiResponse, setApiResponse] = useState(null);
 
 
   const makeDummyCallForTest = async () =>{
@@ -582,9 +583,11 @@ function App() {
                         const data = await response.json();
 
                         if (response.ok) {
+                          setApiResponse(data);
                           setModalType('success');
                           setShowModal(true);
                         } else {
+                          setApiResponse(data);
                           setModalType('error');
                           setModalMessage(`API Error: ${data.message || 'Verification failed'}`);
                           setShowModal(true);
@@ -686,6 +689,30 @@ function App() {
                   <p style={{ margin: '4px 0', fontSize: '14px', color: '#2d3748' }}><strong>Mobile:</strong> {mobile}</p>
                   <p style={{ margin: '4px 0', fontSize: '14px', color: '#2d3748' }}><strong>Finger:</strong> {fingerNames[selectedFinger]}</p>
                 </div>
+                {apiResponse && (
+                  <div style={{
+                    background: '#f7fafc',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: 8,
+                    padding: '16px',
+                    marginBottom: '24px',
+                    textAlign: 'left',
+                    maxHeight: '300px',
+                    overflowY: 'auto'
+                  }}>
+                    <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#2d3748', fontWeight: 600 }}>API Response:</h4>
+                    <pre style={{
+                      margin: 0,
+                      fontSize: '12px',
+                      color: '#4a5568',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                      fontFamily: 'monospace'
+                    }}>
+                      {JSON.stringify(apiResponse, null, 2)}
+                    </pre>
+                  </div>
+                )}
                 <button
                   onClick={() => {
                     setShowModal(false);
