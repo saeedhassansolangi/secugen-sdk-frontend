@@ -782,7 +782,7 @@ const handleRetry = () => {
         </div>
       )}
 
-      {/* {(isCapturing || isSubmitting) && (
+      {(isCapturing || isSubmitting) && (
         <div style={{
           position: 'fixed',
           top: 0,
@@ -814,7 +814,7 @@ const handleRetry = () => {
             }
           `}</style>
         </div>
-      )} */}
+      )}
     </>
   );
 }
