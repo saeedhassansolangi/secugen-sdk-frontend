@@ -69,10 +69,7 @@ function App() {
   const [apiResponse, setApiResponse] = useState(null);
   const [retryCapture, setRetryCapture] = useState(false);
 
-
-  // Function to handle the retry action
 const handleRetry = () => {
-  // Reset form and capture-related states
   setCapturedFingerprint(null);
   setSelectedFinger(null);
   setRetryCapture(false);
@@ -84,49 +81,44 @@ const handleRetry = () => {
   setImageBase64("");
 };
 
-
   const makeDummyCallForTest = async () =>{
     try{
       const payload = {
         Thumb:"",
-                          cnic_number: "4200017613359",
-                          IndexNumber: "2",
-                          mobileNo: "03362601330",
-                          areaName: "Sindh",
-                          channelCode: "00"
-                        };
+          cnic_number: "4200017613359",
+          IndexNumber: "2",
+          mobileNo: "03362601330",
+          areaName: "Sindh",
+          channelCode: "00"
+      };
 
+      const response = await fetch('http://10.0.150.83:7075/FingerExtract', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
-                        // alert("Making API Call with payload:\n" + JSON.stringify(payload, null, 2));
+      const data = await response.json();
 
-                        const response = await fetch('http://10.0.150.83:7075/FingerExtract', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify(payload),
-                        });
+    }catch(error){
+      alert("Error during API call:\n" + JSON.stringify(error, null, 2));
+    }
 
-                        const data = await response.json();
-
-                      }catch(error){
-                        alert("Error during API call:\n" + JSON.stringify(error, null, 2));
-                      }
-
-                    }
-                    
-
+  }
+                  
 
   const handleFingerClick = async (index) => {
     setSelectedFinger(index);
     setIsCapturing(true);                
-    // alert("Rendering finger index: " + index);
-
     
     // Call capture function
     if (window.Fingerprint && typeof window.Fingerprint.captureFingerprint === 'function') {
       try {
         const result = window.Fingerprint.captureFingerprint("Timeout=10000&Quality=50&licstr=&templateFormat=ISO&imageWSQRate=0.75");
+      alert("result" + result)
+      
         let parsed = null;
         if (typeof result === 'string' && result != null) {
           try {
@@ -339,7 +331,7 @@ const handleRetry = () => {
         
 
         {/* <button onClick={makeDummyCallForTest}>CALL: TEST </button> */}
-        <form onSubmit={handleCnicSubmit}>
+        <div >
           {/* CNIC Field */}
           <div style={{ marginBottom: "20px" }}>
             <label htmlFor="cnic" style={{ display: "block", marginBottom: "8px", fontWeight: 600, color: "#2d3748", fontSize: "14px" }}>CNIC Number</label>
@@ -378,9 +370,7 @@ const handleRetry = () => {
             {mobileError && <div style={{ color: "#e53935", fontSize: "12px", marginTop: "6px", display: "flex", alignItems: "center", gap: "4px" }}>⚠️ {mobileError}</div>}
           </div>
 
-          
-
-
+        
           {/* here show the base64 data */} 
 {/* 
           {
@@ -511,7 +501,7 @@ const handleRetry = () => {
           >
             Verify & Submit
           </button> */}
-        </form>
+        </div>
       </div>
       </div>
 
