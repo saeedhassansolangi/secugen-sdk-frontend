@@ -528,7 +528,7 @@ function App() {
                       
                       try {
                         const payload = {
-                          // Thumb: capturedFingerprint,
+                          Thumb: capturedFingerprint,
                           cnic_number: cnic,
                           IndexNumber: String(selectedFinger),
                           mobileNo: mobile,
@@ -536,7 +536,9 @@ function App() {
                           channelCode: "00"
                         };
 
-                        alert("Making API Call with payload:\n" + JSON.stringify(payload, null, 2));
+
+                        alert("Making api call on this URL : http://10.0.150.83:7075/FingerExtract")
+                        // alert("Making API Call with payload:\n" + JSON.stringify(payload, null, 2));
 
                         const response = await fetch('http://10.0.150.83:7075/FingerExtract', {
                           method: 'POST',
