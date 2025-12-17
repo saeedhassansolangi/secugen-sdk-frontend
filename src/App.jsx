@@ -538,7 +538,7 @@ function App() {
 
                         alert("Making API Call with payload:\n" + JSON.stringify(payload, null, 2));
 
-                        const response = await fetch('http://10.0.150.83:7075/FIngerExtract', {
+                        const response = await fetch('http://10.0.150.83:7075/FingerExtract', {
                           method: 'POST',
                           headers: {
                             'Content-Type': 'application/json',
