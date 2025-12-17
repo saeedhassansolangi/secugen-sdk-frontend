@@ -112,7 +112,8 @@ const handleRetry = () => {
     setIsCapturing(true);    
     
     // show modal   
-    setModalMessage("Please place your finger on the scanner...");
+    setModalType('info');
+    setModalMessage(`Please place your ${fingerNames[index]} on the fingerprint scanner.`);
     setShowModal(true);
     
     if (window.Fingerprint && typeof window.Fingerprint.captureFingerprint === 'function') {
@@ -203,45 +204,6 @@ const handleRetry = () => {
       setInitError({ message: 'Fingerprint API not available.' });
     }
     setLoading(l => ({ ...l, initialize: false }));
-  };
-
-  const capture = () => {
-    setLoading(l => ({ ...l, capture: true }));
-    setDeviceInfo('');
-    setDeviceStatus('');
-    setInitError(null);
-    setFingerData(null);
-    setImageBase64('');
-    if (window.Fingerprint && typeof window.Fingerprint.captureFingerprint === 'function') {
-      try {
-        const result = window.Fingerprint.captureFingerprint("Timeout=10000&Quality=50&licstr=&templateFormat=ISO&imageWSQRate=0.75");
-        let parsed = null;
-        if (typeof result === 'string' && result != null) {
-          try {
-            parsed = JSON.parse(result);
-            if(parsed?.data?.ImageDataBase64) {
-              setImageBase64(parsed.data.ImageDataBase64);
-            }
-          } catch {
-            setDeviceStatus('Capture returned invalid JSON.');
-            setFingerData(null);
-            setLoading(l => ({ ...l, capture: false }));
-            return;
-          }
-        } else if (typeof result === 'object' && result !== null) {
-          parsed = result;
-        }
-        setFingerData(parsed);
-        setDeviceStatus(parsed && parsed.message ? parsed.message : 'Capture complete!');
-      } catch {
-        setDeviceStatus('Error capturing.');
-        setFingerData(null);
-      }
-    } else {
-      setDeviceStatus('Fingerprint API not available.');
-      setFingerData(null);
-    }
-    setLoading(l => ({ ...l, capture: false }));
   };
 
   useEffect(() => {
@@ -663,26 +625,6 @@ const handleRetry = () => {
                   >
                     Cancel
                   </button>
-
-
- {/* <button
-        onClick={handleRetry}  // Add the retry functionality here
-        style={{
-          padding: '10px 24px',
-          background: '#ff6347',  // Red color for retry
-          color: '#fff',
-          border: 'none',
-          borderRadius: 8,
-          fontSize: '15px',
-          fontWeight: 600,
-          cursor: 'pointer',
-          boxShadow: '0 4px 12px rgba(255,99,71,0.4)'
-        }}
-      >
-        Try Another Finger
-      </button> */}
-
-                  
                 </div>
               </div>
             )}
@@ -789,6 +731,81 @@ const handleRetry = () => {
           </div>
         </div>
       )}
+
+      {
+        modalType === "info" && showModal && (
+          <div 
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0,0,0,0.6)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '20px'
+            }}
+            onClick={() => setShowModal(false)}
+          >
+            <div
+              style={{
+                background: '#fff',
+                borderRadius: 16,
+
+                padding: '32px',
+                maxWidth: 500,
+                width: '100%',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+                position: 'relative'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowModal(false)}
+                style={{
+                  position: 'absolute',
+                  top: 16,
+                  right: 16,
+                  background: 'transparent',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+
+                  color: '#718096',
+                  padding: '4px 8px'
+                }}
+              >
+                ×
+              </button>
+              <div style={{ textAlign: 'center' }}>
+                <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Information</h3>
+                <p style={{ color: '#718096', marginBottom: '24px', fontSize: '15px' }}>{modalMessage}</p>
+                <button
+                  onClick={() => setShowModal(false)}
+                  style={{
+                    padding: '12px 32px', 
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 8,
+
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(102,126,234,0.4)'
+                  }}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+
+      }
 
       {(isCapturing || isSubmitting) && (
         <div style={{
