@@ -129,7 +129,7 @@ const handleRetry = () => {
               setShowModal(true);
             } else {
               setModalType('error');
-              setModalMessage('Failed to capture fingerprint image');
+              setModalMessage(parsed?.message || 'Failed to capture fingerprint image');
               setShowModal(true);
             }
           } catch {
