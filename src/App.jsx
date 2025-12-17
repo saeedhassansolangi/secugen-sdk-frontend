@@ -549,7 +549,7 @@ function App() {
                         setModalType('error');
                         // alert("Error, )
                         // setModalMessage(`Network Error: ${error.message}`);
-                        setModalMessage(JSON.stringify(error));
+                        setModalMessage(error);
                         setShowModal(true);
                       } finally {
                         setIsSubmitting(false);
