@@ -545,11 +545,9 @@ function App() {
                           setShowModal(true);
                         }
                       } catch (error) {
-                        alert("Error during API call:\n" + JSON.stringify(error, null, 2));
                         setModalType('error');
                         // alert("Error, )
-                        // setModalMessage(`Network Error: ${error.message}`);
-                        setModalMessage(error);
+                        setModalMessage(`Network Error: ${error.message}`);
                         setShowModal(true);
                       } finally {
                         setIsSubmitting(false);
