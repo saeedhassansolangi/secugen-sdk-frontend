@@ -151,7 +151,7 @@ const handleRetry = () => {
         setModalMessage('Error capturing fingerprint: ' + (error.message || 'Unknown error'));
         setShowModal(true);
       }
-    }, 5000);
+    }, 1000);
     } else {
       setModalType('error');
       setModalMessage('Fingerprint device not available');
@@ -790,7 +790,7 @@ const handleRetry = () => {
         </div>
       )}
 
-      {(isSubmitting) && (
+      {(isCapturing || isSubmitting) && (
         <div style={{
           position: 'fixed',
           top: 0,
@@ -813,7 +813,7 @@ const handleRetry = () => {
             animation: 'spin 1s linear infinite'
           }}></div>
           <p style={{ color: '#fff', marginTop: 16, fontSize: 16 }}>
-            { 'Submitting verification...'}
+            {isCapturing ? "Capturing...":  'Submitting verification...'}
           </p>
           <style>{`
             @keyframes spin {
