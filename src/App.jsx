@@ -19,17 +19,30 @@ const fingerDots = {
   })),
 };
 
+// finger_map = {
+//         1: "RIGHT_THUMB",
+//         2: "RIGHT_INDEX",
+//         3: "RIGHT_MIDDLE",
+//         4: "RIGHT_RING",
+//         5: "RIGHT_LITTLE",
+//         6: "LEFT_THUMB",
+//         7: "LEFT_INDEX",
+//         8: "LEFT_MIDDLE",
+//         9: "LEFT_RING",
+//        10: "LEFT_LITTLE"
+// }
+
 const fingerNames = {
-  0: "Right Thumb",
-  1: "Right Index",
-  2: "Right Middle",
-  3: "Right Ring",
-  4: "Right Little",
-  5: "Left Thumb",
-  6: "Left Index",
-  7: "Left Middle",
-  8: "Left Ring",
-  9: "Left Little",
+  1: "Right Thumb",
+  2: "Right Index",
+  3: "Right Middle",
+  4: "Right Ring",
+  5: "Right Little",
+  6: "Left Thumb",
+  7: "Left Index",
+  8: "Left Middle",
+  9: "Left Ring",
+  10: "Left Little",
 };
 
 function App() {
@@ -511,7 +524,7 @@ function App() {
                           channelCode: "00"
                         };
 
-                        const response = await fetch('http://10.0.70.83:7070/AnyExtract', {
+                        const response = await fetch('http://10.0.150.83:7075/FIngerExtract', {
                           method: 'POST',
                           headers: {
                             'Content-Type': 'application/json',
