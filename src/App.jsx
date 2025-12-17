@@ -328,7 +328,7 @@ function App() {
             setFingerData && (
               <div style={{ marginBottom: "20px", padding: "16px", background: "#f7fafc", borderRadius: 12, border: "1px solid #e2e8f0", fontSize: "12px", color: "#4a5568", maxHeight: "100px", overflowY: "auto" }}>
                 <strong>Fingerprint Data (Base64):</strong>
-                <div style={{ marginTop: "8px", wordBreak: "break-all" }}>{fingerData.data?.ImageDataBase64 || "No data captured yet."}</div> 
+                <div style={{ marginTop: "8px", wordBreak: "break-all" }}>{fingerData?.data?.ImageDataBase64 || "No data captured yet."}</div> 
               </div>    
             )
           }
