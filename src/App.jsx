@@ -111,13 +111,18 @@ const handleRetry = () => {
 
   const handleFingerClick = async (index) => {
     setSelectedFinger(index);
-    setIsCapturing(true);                
+    setIsCapturing(true);   
+    setModalType(''); // Clear any previous modal type
+    setShowModal(false); // Hide previous modal if any
+    
+    
+    setModalMessage('Capturing fingerprint... Please wait');
+    setShowModal(true);
     
     // Call capture function
     if (window.Fingerprint && typeof window.Fingerprint.captureFingerprint === 'function') {
       try {
         const result = window.Fingerprint.captureFingerprint("Timeout=10000&Quality=50&licstr=&templateFormat=ISO&imageWSQRate=0.75");
-      alert("result" + result)
       
         let parsed = null;
         if (typeof result === 'string' && result != null) {
