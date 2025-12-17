@@ -67,6 +67,39 @@ function App() {
   const [isCapturing, setIsCapturing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+
+  const makeDummyCallForTest = async () =>{
+    try{
+      const payload = {
+                          Thumb: "sdfdsf",
+                          cnic_number: "4200017613359",
+                          IndexNumber: "2",
+                          mobileNo: "03362601330",
+                          areaName: "Sindh",
+                          channelCode: "00"
+                        };
+
+
+                        // alert("Making API Call with payload:\n" + JSON.stringify(payload, null, 2));
+
+                        const response = await fetch('http://10.0.150.83:7075/FingerExtract', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify(payload),
+                        });
+
+                        const data = await response.json();
+
+                      }catch(error){
+                        alert("Error during API call:\n" + JSON.stringify(error, null, 2));
+                      }
+
+                    }
+                    
+
+
   const handleFingerClick = async (index) => {
     setSelectedFinger(index);
     setIsCapturing(true);
@@ -126,6 +159,7 @@ function App() {
     handleResize(); // Initial size calculation
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+
   }, []);
 
 
@@ -282,6 +316,8 @@ function App() {
           <h2 style={{ color: "#2d3748", marginBottom: "8px", fontSize: "28px", fontWeight: "700", letterSpacing: "-0.5px" }}>NADRA Verification</h2>
           <p style={{ color: "#718096", fontSize: "14px" }}>Complete the form to verify your identity</p>
         </div>
+
+        <button onClick={makeDummyCallForTest}>CALL: TEST </button>
         <form onSubmit={handleCnicSubmit}>
           {/* CNIC Field */}
           <div style={{ marginBottom: "20px" }}>
