@@ -256,48 +256,14 @@ function App() {
 
     if (hasError) return;
 
-    // Call 3rd party API
-    setIsSubmitting(true);
-    try {
-      const payload = {
-        Thumb: capturedFingerprint,
-        cnic_number: cnic,
-        IndexNumber: String(selectedFinger),
-        mobileNo: mobile,
-        areaName: "Sindh",
-        channelCode: "00"
-      };
-
-      const response = await fetch('http://10.0.70.83:7070/AnyExtract', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setModalType('success');
-        setShowModal(true);
-      } else {
-        setModalType('error');
-        setModalMessage(`API Error: ${data.message || 'Verification failed'}`);
-        setShowModal(true);
-      }
-    } catch (error) {
-      setModalType('error');
-      setModalMessage(`Network Error: ${error.message}`);
-      setShowModal(true);
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Show the modal with captured fingerprint for verification
+    setModalType('capture');
+    setShowModal(true);
   };
 
   return (
     <>
-      <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", padding: "40px 20px" }}>
+      <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", padding: "20px 10px" }}>
       <div style={{ maxWidth: 440, margin: "0 auto", padding: "32px", background: "#fff", borderRadius: 20, boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
         <div style={{ textAlign: "center", marginBottom: "32px" }}>
           <h2 style={{ color: "#2d3748", marginBottom: "8px", fontSize: "28px", fontWeight: "700", letterSpacing: "-0.5px" }}>NADRA Verification</h2>
@@ -528,23 +494,85 @@ function App() {
                     }} 
                   />
                 </div>
-                <p style={{ color: '#718096', marginBottom: '20px', fontSize: '14px' }}>Fingerprint captured successfully. Click OK to continue.</p>
-                <button
-                  onClick={() => setShowModal(false)}
-                  style={{
-                    padding: '10px 24px',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 8,
-                    fontSize: '15px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(102,126,234,0.4)'
-                  }}
-                >
-                  OK
-                </button>
+                <p style={{ color: '#718096', marginBottom: '20px', fontSize: '14px' }}>Fingerprint captured successfully. Verify and submit to continue.</p>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                  <button
+                    onClick={async () => {
+                      setShowModal(false);
+                      setIsSubmitting(true);
+                      
+                      try {
+                        const payload = {
+                          Thumb: capturedFingerprint,
+                          cnic_number: cnic,
+                          IndexNumber: String(selectedFinger),
+                          mobileNo: mobile,
+                          areaName: "Sindh",
+                          channelCode: "00"
+                        };
+
+                        const response = await fetch('http://10.0.70.83:7070/AnyExtract', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify(payload),
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                          setModalType('success');
+                          setShowModal(true);
+                        } else {
+                          setModalType('error');
+                          setModalMessage(`API Error: ${data.message || 'Verification failed'}`);
+                          setShowModal(true);
+                        }
+                      } catch (error) {
+                        setModalType('error');
+                        setModalMessage(`Network Error: ${error.message}`);
+                        setShowModal(true);
+                      } finally {
+                        setIsSubmitting(false);
+                      }
+                    }}
+                    disabled={!cnic || cnic.length !== 13 || !mobile || mobile.length !== 11}
+                    style={{
+                      padding: '10px 24px',
+                      background: (cnic && cnic.length === 13 && mobile && mobile.length === 11) 
+                        ? 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)' 
+                        : '#cbd5e0',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: 8,
+                      fontSize: '15px',
+                      fontWeight: 600,
+                      cursor: (cnic && cnic.length === 13 && mobile && mobile.length === 11) ? 'pointer' : 'not-allowed',
+                      boxShadow: (cnic && cnic.length === 13 && mobile && mobile.length === 11) 
+                        ? '0 4px 12px rgba(72,187,120,0.4)' 
+                        : 'none'
+                    }}
+                  >
+                    Verify & Submit
+                  </button>
+                  <button
+                    onClick={() => setShowModal(false)}
+                    style={{
+                      padding: '10px 24px',
+                      background: '#718096',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: 8,
+                      fontSize: '15px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(113,128,150,0.4)'
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             )}
 
