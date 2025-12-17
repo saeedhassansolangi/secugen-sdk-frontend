@@ -576,6 +576,9 @@ const handleRetry = () => {
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
                   <button
                     onClick={async () => {
+
+                      handleCnicSubmit();
+
                       setShowModal(false);
                       setIsSubmitting(true);
                       
