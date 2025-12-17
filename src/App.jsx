@@ -386,7 +386,7 @@ const handleRetry = () => {
             <h3 style={{ textAlign: "center", marginBottom: "8px", fontSize: "18px", color: "#2d3748", fontWeight: "700" }}>Select Finger</h3>
 
             {selectedFinger && (
-              <p style={{ textAlign: "center", fontSize: "13px", color: "#48bb78", marginBottom: "12px" }}>Selected: {fingerNames[selectedFinger]} {selectedFinger} isCapturing:{isCapturing == true ? "YES" :"NO"}</p>
+              <p style={{ textAlign: "center", fontSize: "13px", color: "#48bb78", marginBottom: "12px" }}>Selected: {fingerNames[selectedFinger]} {selectedFinger}}</p>
             )  
             }
             <p style={{ textAlign: "center", fontSize: "13px", color: "#718096", marginBottom: "20px" }}>Choose hand and tap the finger to scan</p>
@@ -474,7 +474,7 @@ const handleRetry = () => {
             )}
           </div>
 
-          {/* <button 
+           <button 
             type="submit" 
             disabled={cnic.length !== 13 || mobile.length !== 11 || !mobile.startsWith("03") || selectedFinger === null || !capturedFingerprint || isSubmitting}
             style={{ 
@@ -503,7 +503,7 @@ const handleRetry = () => {
             }}
           >
             Verify & Submit
-          </button> */}
+          </button>
         </div>
       </div>
       </div>
@@ -782,7 +782,7 @@ const handleRetry = () => {
         </div>
       )}
 
-      {(isCapturing || isSubmitting) && (
+      {(isSubmitting) && (
         <div style={{
           position: 'fixed',
           top: 0,
@@ -805,7 +805,7 @@ const handleRetry = () => {
             animation: 'spin 1s linear infinite'
           }}></div>
           <p style={{ color: '#fff', marginTop: 16, fontSize: 16 }}>
-            {isCapturing ? 'Capturing fingerprint...' : 'Submitting verification...'}
+            { 'Submitting verification...'}
           </p>
           <style>{`
             @keyframes spin {
