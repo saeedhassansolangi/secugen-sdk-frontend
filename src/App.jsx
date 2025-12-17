@@ -109,12 +109,18 @@ const handleRetry = () => {
 
   const handleFingerClick = async (index) => {
     setSelectedFinger(index);
-    setIsCapturing(true);                
+    setIsCapturing(true);    
+    
+    
+    // show modal   
+    setModalMessage("Please place your finger on the scanner...");
+    setShowModal(true);
     
     if (window.Fingerprint && typeof window.Fingerprint.captureFingerprint === 'function') {
-      try {
+        setTimeout(() => {
+          setShowModal(false);
+       try {
         const result = window.Fingerprint.captureFingerprint("Timeout=10000&Quality=50&licstr=&templateFormat=ISO&imageWSQRate=0.75");
-      
         let parsed = null;
         if (typeof result === 'string' && result != null) {
           try {
@@ -143,9 +149,10 @@ const handleRetry = () => {
         }
       } catch (error) {
         setModalType('error');
-        setModalMessage('Error capturing fingerprint');
+        setModalMessage('Error capturing fingerprint: ' + (error.message || 'Unknown error'));
         setShowModal(true);
       }
+    }, 2000);
     } else {
       setModalType('error');
       setModalMessage('Fingerprint device not available');
@@ -385,7 +392,7 @@ const handleRetry = () => {
             {selectedFinger && (
               <p style={{ textAlign: "center", fontSize: "13px", color: "#48bb78", marginBottom: "12px" }}>Selected: {fingerNames[selectedFinger]} {selectedFinger}</p>
             )}
-            
+
             <p style={{ textAlign: "center", fontSize: "13px", color: "#718096", marginBottom: "20px" }}>Choose hand and tap the finger to scan</p>
             <div style={{ display: "flex", justifyContent: "center", gap: 20, marginBottom: 20, fontSize: 12 }}>
               <label style={{ cursor: "pointer", padding: "8px 16px", background: hand === "right" ? "#667eea" : "#fff", color: hand === "right" ? "#fff" : "#4a5568", borderRadius: 8, fontWeight: 500, transition: "all 0.3s", border: "2px solid #667eea" }}>
