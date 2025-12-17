@@ -567,7 +567,7 @@ function App() {
                         : 'none'
                     }}
                   >
-                    Verify & Submit
+                     Submit
                   </button>
                   <button
                     onClick={() => setShowModal(false)}
