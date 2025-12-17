@@ -111,7 +111,6 @@ const handleRetry = () => {
     setSelectedFinger(index);
     setIsCapturing(true);    
     
-    
     // show modal   
     setModalMessage("Please place your finger on the scanner...");
     setShowModal(true);
@@ -152,7 +151,7 @@ const handleRetry = () => {
         setModalMessage('Error capturing fingerprint: ' + (error.message || 'Unknown error'));
         setShowModal(true);
       }
-    }, 2000);
+    }, 5000);
     } else {
       setModalType('error');
       setModalMessage('Fingerprint device not available');
