@@ -544,7 +544,9 @@ function App() {
                         }
                       } catch (error) {
                         setModalType('error');
-                        setModalMessage(`Network Error: ${error.message}`);
+                        // alert("Error, )
+                        // setModalMessage(`Network Error: ${error.message}`);
+                        setModalMessage(JSON.stringify(error));
                         setShowModal(true);
                       } finally {
                         setIsSubmitting(false);
@@ -667,7 +669,7 @@ function App() {
         </div>
       )}
 
-      {(isCapturing || isSubmitting) && (
+      {/* {(isCapturing || isSubmitting) && (
         <div style={{
           position: 'fixed',
           top: 0,
@@ -699,7 +701,7 @@ function App() {
             }
           `}</style>
         </div>
-      )}
+      )} */}
     </>
   );
 }
