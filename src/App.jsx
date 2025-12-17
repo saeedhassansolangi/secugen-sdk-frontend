@@ -79,6 +79,9 @@ const handleRetry = () => {
   setModalType('');
   setModalMessage('');
   setShowModal(false);
+  setCnic("");
+  setMobile("");
+  setImageBase64("");
 };
 
 
