@@ -105,15 +105,12 @@ const handleRetry = () => {
     }catch(error){
       alert("Error during API call:\n" + JSON.stringify(error, null, 2));
     }
-
   }
-                  
 
   const handleFingerClick = async (index) => {
     setSelectedFinger(index);
     setIsCapturing(true);                
     
-    // Call capture function
     if (window.Fingerprint && typeof window.Fingerprint.captureFingerprint === 'function') {
       try {
         const result = window.Fingerprint.captureFingerprint("Timeout=10000&Quality=50&licstr=&templateFormat=ISO&imageWSQRate=0.75");
@@ -400,7 +397,7 @@ const handleRetry = () => {
                     setHand("right");
                     setSelectedFinger(null);
                   }}
-                  style={{ marginRight: 6 }}
+                  style={{ marginRight: 3 }}
                 />
                 Right Hand
               </label>
@@ -413,7 +410,7 @@ const handleRetry = () => {
                     setHand("left");
                     setSelectedFinger(null);
                   }}
-                  style={{ marginRight: 6 }}
+                  style={{ marginRight: 3 }}
                 />
                 Left Hand
               </label>
@@ -612,9 +609,14 @@ const handleRetry = () => {
                           setShowModal(true);
                         }
                       } catch (error) {
-                        setModalType('error');
-                        // alert("Error, )
-                        setModalMessage(`Network Error: ${error.message} Or Check if VPN is Connected` );
+                        // setModalMessage(`Network Error: ${error.message} Or Check if VPN is Connected` );
+                         if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+                          setModalType('error');
+                          setModalMessage(`Network Error: Unable to complete the request. Please check your internet connection or try again later. If the problem persists, ensure your VPN is connected. OTG might also need to be enabled. (${error.message})`);
+                      } else {
+                          setModalType('error');
+                          setModalMessage(`Error: ${error.message}`);
+                        }
                         setShowModal(true);
                       } finally {
                         setIsSubmitting(false);
