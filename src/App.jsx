@@ -661,7 +661,7 @@ const handleRetry = () => {
                   </button>
 
 
- <button
+ {/* <button
         onClick={handleRetry}  // Add the retry functionality here
         style={{
           padding: '10px 24px',
@@ -676,7 +676,7 @@ const handleRetry = () => {
         }}
       >
         Try Another Finger
-      </button>
+      </button> */}
 
                   
                 </div>
