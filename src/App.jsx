@@ -321,6 +321,18 @@ function App() {
             {mobileError && <div style={{ color: "#e53935", fontSize: "12px", marginTop: "6px", display: "flex", alignItems: "center", gap: "4px" }}>⚠️ {mobileError}</div>}
           </div>
 
+
+          {/* here show the base64 data */} 
+
+          {
+            setFingerData && (
+              <div style={{ marginBottom: "20px", padding: "16px", background: "#f7fafc", borderRadius: 12, border: "1px solid #e2e8f0", fontSize: "12px", color: "#4a5568", maxHeight: "100px", overflowY: "auto" }}>
+                <strong>Fingerprint Data (Base64):</strong>
+                <div style={{ marginTop: "8px", wordBreak: "break-all" }}>{fingerData.data?.ImageDataBase64 || "No data captured yet."}</div> 
+              </div>    
+            )
+          }
+
           {/* Finger Selection Section */}
           <div style={{ margin: "24px 0", padding: "24px", borderRadius: 16, background: "linear-gradient(135deg, #f6f8fb 0%, #e9ecf1 100%)", border: "1px solid #e2e8f0", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
             <h3 style={{ textAlign: "center", marginBottom: "8px", fontSize: "18px", color: "#2d3748", fontWeight: "700" }}>Select Finger</h3>
