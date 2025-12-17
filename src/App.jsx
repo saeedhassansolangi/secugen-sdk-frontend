@@ -386,7 +386,7 @@ const handleRetry = () => {
             <h3 style={{ textAlign: "center", marginBottom: "8px", fontSize: "18px", color: "#2d3748", fontWeight: "700" }}>Select Finger</h3>
 
             {selectedFinger && (
-              <p style={{ textAlign: "center", fontSize: "13px", color: "#48bb78", marginBottom: "12px" }}>Selected: {fingerNames[selectedFinger]} {selectedFinger}</p>
+              <p style={{ textAlign: "center", fontSize: "13px", color: "#48bb78", marginBottom: "12px" }}>Selected: {fingerNames[selectedFinger]} {selectedFinger} {isCapturing}</p>
             )  
             }
             <p style={{ textAlign: "center", fontSize: "13px", color: "#718096", marginBottom: "20px" }}>Choose hand and tap the finger to scan</p>
