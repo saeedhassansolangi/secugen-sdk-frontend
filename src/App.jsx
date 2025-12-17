@@ -111,13 +111,7 @@ const handleRetry = () => {
 
   const handleFingerClick = async (index) => {
     setSelectedFinger(index);
-    setIsCapturing(true);   
-    setModalType(''); // Clear any previous modal type
-    setShowModal(false); // Hide previous modal if any
-    
-    
-    setModalMessage('Capturing fingerprint... Please wait');
-    setShowModal(true);
+    setIsCapturing(true);                
     
     // Call capture function
     if (window.Fingerprint && typeof window.Fingerprint.captureFingerprint === 'function') {
@@ -446,6 +440,7 @@ const handleRetry = () => {
                   <button
                     key={finger.index}
                     onClick={() => handleFingerClick(finger.index)}
+                    disabled={isCapturing}
                     style={{
                       position: "absolute",
                       top: finger.top,
@@ -581,12 +576,9 @@ const handleRetry = () => {
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
                   <button
                     onClick={async () => {
-
                       handleCnicSubmit();
-
                       setShowModal(false);
                       setIsSubmitting(true);
-                      
                       try {
                         const payload = {
                           Thumb: capturedFingerprint,
