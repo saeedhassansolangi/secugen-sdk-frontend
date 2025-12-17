@@ -47,10 +47,58 @@ function App() {
   const [mobile, setMobile] = useState("");
   const [mobileError, setMobileError] = useState("");
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+  const [capturedFingerprint, setCapturedFingerprint] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState(''); // 'capture', 'success', or 'error'
+  const [modalMessage, setModalMessage] = useState('');
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleFingerClick = (index) => {
+  const handleFingerClick = async (index) => {
     setSelectedFinger(index);
-    alert(`Finger index selected: ${index}`);
+    setIsCapturing(true);
+    
+    // Call capture function
+    if (window.Fingerprint && typeof window.Fingerprint.captureFingerprint === 'function') {
+      try {
+        const result = window.Fingerprint.captureFingerprint("Timeout=10000&Quality=50&licstr=&templateFormat=ISO&imageWSQRate=0.75");
+        let parsed = null;
+        if (typeof result === 'string' && result != null) {
+          try {
+            parsed = JSON.parse(result);
+            if(parsed?.data?.ImageDataBase64) {
+              setCapturedFingerprint(parsed.data.ImageDataBase64);
+              setModalType('capture');
+              setShowModal(true);
+            } else {
+              setModalType('error');
+              setModalMessage('Failed to capture fingerprint image');
+              setShowModal(true);
+            }
+          } catch {
+            setModalType('error');
+            setModalMessage('Invalid response from fingerprint device');
+            setShowModal(true);
+          }
+        } else if (typeof result === 'object' && result !== null) {
+          parsed = result;
+          if(parsed?.data?.ImageDataBase64) {
+            setCapturedFingerprint(parsed.data.ImageDataBase64);
+            setModalType('capture');
+            setShowModal(true);
+          }
+        }
+      } catch (error) {
+        setModalType('error');
+        setModalMessage('Error capturing fingerprint');
+        setShowModal(true);
+      }
+    } else {
+      setModalType('error');
+      setModalMessage('Fingerprint device not available');
+      setShowModal(true);
+    }
+    setIsCapturing(false);
   };
 
   // Dynamically calculate the finger position based on the image size
@@ -67,25 +115,6 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const getDeviceInfo = () => {
-    setLoading(l => ({ ...l, deviceInfo: true }));
-    setDeviceInfo('');
-    setDeviceStatus('');
-    setInitError(null);
-    setFingerData(null);
-    setImageBase64('');
-    if (window.DeviceInfo && typeof window.DeviceInfo.getDeviceInfo === 'function') {
-      try {
-        const info = window.DeviceInfo.getDeviceInfo();
-        setDeviceInfo(typeof info === 'object' ? JSON.stringify(info, null, 2) : String(info));
-      } catch {
-        setDeviceInfo('Error getting device info.');
-      }
-    } else {
-      setDeviceInfo('DeviceInfo API not available.');
-    }
-    setLoading(l => ({ ...l, deviceInfo: false }));
-  };
 
   const initializeDevice = () => {
     setLoading(l => ({ ...l, initialize: true }));
@@ -162,7 +191,11 @@ function App() {
   const handleCnicChange = (e) => {
     const value = e.target.value.replace(/\D/g, "");
     setCnic(value);
-    if (value.length !== 13 && value.length !== 0) {
+    if (value.length === 0) {
+      setCnicError("CNIC is required");
+    } else if(value.startsWith("0")) {
+      setCnicError("CNIC cannot start with 0");
+    }else if(value.length !== 13) {
       setCnicError("CNIC must be exactly 13 digits");
     } else {
       setCnicError("");
@@ -183,7 +216,7 @@ function App() {
     }
   };
 
-  const handleCnicSubmit = (e) => {
+  const handleCnicSubmit = async (e) => {
     e.preventDefault();
     let hasError = false;
 
@@ -208,23 +241,72 @@ function App() {
     }
 
     if (!selectedFinger && selectedFinger !== 0) {
-      alert("Please select a finger");
+      setModalType('error');
+      setModalMessage('Please select a finger');
+      setShowModal(true);
+      hasError = true;
+    }
+
+    if (!capturedFingerprint) {
+      setModalType('error');
+      setModalMessage('Please capture fingerprint first');
+      setShowModal(true);
       hasError = true;
     }
 
     if (hasError) return;
 
-    alert(`CNIC: ${cnic}\nMobile: ${mobile}\nFinger: ${fingerNames[selectedFinger]}`);
+    // Call 3rd party API
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        Thumb: capturedFingerprint,
+        cnic_number: cnic,
+        IndexNumber: String(selectedFinger),
+        mobileNo: mobile,
+        areaName: "Sindh",
+        channelCode: "00"
+      };
+
+      const response = await fetch('http://10.0.70.83:7070/AnyExtract', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setModalType('success');
+        setShowModal(true);
+      } else {
+        setModalType('error');
+        setModalMessage(`API Error: ${data.message || 'Verification failed'}`);
+        setShowModal(true);
+      }
+    } catch (error) {
+      setModalType('error');
+      setModalMessage(`Network Error: ${error.message}`);
+      setShowModal(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <>
-      <div style={{ maxWidth: 420, margin: "2rem auto", padding: "24px", border: "1px solid #ddd", borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.1)", background: "#fff" }}>
-        <h2 style={{ textAlign: "center", color: "#333", marginBottom: "24px", fontSize: "24px" }}>NADRA Verification</h2>
+      <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", padding: "40px 20px" }}>
+      <div style={{ maxWidth: 440, margin: "0 auto", padding: "32px", background: "#fff", borderRadius: 20, boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
+        <div style={{ textAlign: "center", marginBottom: "32px" }}>
+          <h2 style={{ color: "#2d3748", marginBottom: "8px", fontSize: "28px", fontWeight: "700", letterSpacing: "-0.5px" }}>NADRA Verification</h2>
+          <p style={{ color: "#718096", fontSize: "14px" }}>Complete the form to verify your identity</p>
+        </div>
         <form onSubmit={handleCnicSubmit}>
           {/* CNIC Field */}
-          <div style={{ marginBottom: "16px" }}>
-            <label htmlFor="cnic" style={{ display: "block", marginBottom: "6px", fontWeight: 500, color: "#555" }}>CNIC (13 digits):</label>
+          <div style={{ marginBottom: "20px" }}>
+            <label htmlFor="cnic" style={{ display: "block", marginBottom: "8px", fontWeight: 600, color: "#2d3748", fontSize: "14px" }}>CNIC Number</label>
             <input
               type="text"
               id="cnic"
@@ -233,15 +315,17 @@ function App() {
               onChange={handleCnicChange}
               maxLength={13}
               placeholder="3520212345678"
-              style={{ width: "100%", padding: "10px 12px", border: "1px solid #ccc", borderRadius: 6, fontSize: "14px", boxSizing: "border-box" }}
+              style={{ width: "100%", padding: "12px 16px", border: cnicError ? "2px solid #e53935" : "2px solid #e2e8f0", borderRadius: 10, fontSize: "15px", boxSizing: "border-box", transition: "all 0.3s", outline: "none", background: "#f7fafc" }}
               autoComplete="off"
+              onFocus={(e) => e.target.style.border = "2px solid #667eea"}
+              onBlur={(e) => e.target.style.border = cnicError ? "2px solid #e53935" : "2px solid #e2e8f0"}
             />
-            {cnicError && <div style={{ color: "#e53935", fontSize: "13px", marginTop: "4px" }}>{cnicError}</div>}
+            {cnicError && <div style={{ color: "#e53935", fontSize: "12px", marginTop: "6px", display: "flex", alignItems: "center", gap: "4px" }}>⚠️ {cnicError}</div>}
           </div>
 
           {/* Mobile Number Field */}
-          <div style={{ marginBottom: "20px" }}>
-            <label htmlFor="mobile" style={{ display: "block", marginBottom: "6px", fontWeight: 500, color: "#555" }}>Mobile Number (11 digits):</label>
+          <div style={{ marginBottom: "24px" }}>
+            <label htmlFor="mobile" style={{ display: "block", marginBottom: "8px", fontWeight: 600, color: "#2d3748", fontSize: "14px" }}>Mobile Number</label>
             <input
               type="text"
               id="mobile"
@@ -250,18 +334,20 @@ function App() {
               onChange={handleMobileChange}
               maxLength={11}
               placeholder="03001234567"
-              style={{ width: "100%", padding: "10px 12px", border: "1px solid #ccc", borderRadius: 6, fontSize: "14px", boxSizing: "border-box" }}
+              style={{ width: "100%", padding: "12px 16px", border: mobileError ? "2px solid #e53935" : "2px solid #e2e8f0", borderRadius: 10, fontSize: "15px", boxSizing: "border-box", transition: "all 0.3s", outline: "none", background: "#f7fafc" }}
               autoComplete="off"
+              onFocus={(e) => e.target.style.border = "2px solid #667eea"}
+              onBlur={(e) => e.target.style.border = mobileError ? "2px solid #e53935" : "2px solid #e2e8f0"}
             />
-            {mobileError && <div style={{ color: "#e53935", fontSize: "13px", marginTop: "4px" }}>{mobileError}</div>}
+            {mobileError && <div style={{ color: "#e53935", fontSize: "12px", marginTop: "6px", display: "flex", alignItems: "center", gap: "4px" }}>⚠️ {mobileError}</div>}
           </div>
 
           {/* Finger Selection Section */}
-          <div style={{ margin: "20px 0", padding: "20px", borderRadius: 10, background: "#f9f9f9", border: "1px solid #eee" }}>
-            <h3 style={{ textAlign: "center", marginBottom: "12px", fontSize: "18px", color: "#333" }}>Select Finger</h3>
-            <p style={{ textAlign: "center", fontSize: "13px", color: "#666", marginBottom: "16px" }}>Choose hand and tap the finger to scan</p>
-            <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 16, fontSize: 14 }}>
-              <label>
+          <div style={{ margin: "24px 0", padding: "24px", borderRadius: 16, background: "linear-gradient(135deg, #f6f8fb 0%, #e9ecf1 100%)", border: "1px solid #e2e8f0", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
+            <h3 style={{ textAlign: "center", marginBottom: "8px", fontSize: "18px", color: "#2d3748", fontWeight: "700" }}>Select Finger</h3>
+            <p style={{ textAlign: "center", fontSize: "13px", color: "#718096", marginBottom: "20px" }}>Choose hand and tap the finger to scan</p>
+            <div style={{ display: "flex", justifyContent: "center", gap: 20, marginBottom: 20, fontSize: 14 }}>
+              <label style={{ cursor: "pointer", padding: "8px 16px", background: hand === "right" ? "#667eea" : "#fff", color: hand === "right" ? "#fff" : "#4a5568", borderRadius: 8, fontWeight: 500, transition: "all 0.3s", border: "2px solid #667eea" }}>
                 <input
                   type="radio"
                   name="hand"
@@ -270,10 +356,11 @@ function App() {
                     setHand("right");
                     setSelectedFinger(null);
                   }}
-                />{" "}
+                  style={{ marginRight: 6 }}
+                />
                 Right Hand
               </label>
-              <label>
+              <label style={{ cursor: "pointer", padding: "8px 16px", background: hand === "left" ? "#667eea" : "#fff", color: hand === "left" ? "#fff" : "#4a5568", borderRadius: 8, fontWeight: 500, transition: "all 0.3s", border: "2px solid #667eea" }}>
                 <input
                   type="radio"
                   name="hand"
@@ -282,7 +369,8 @@ function App() {
                     setHand("left");
                     setSelectedFinger(null);
                   }}
-                />{" "}
+                  style={{ marginRight: 6 }}
+                />
                 Left Hand
               </label>
             </div>
@@ -317,13 +405,14 @@ function App() {
                       width: 10,
                       height: 10,
                       borderRadius: "50%",
-                      backgroundColor: isSelected ? "#00c853" : "#e53935",
-                      border: "2px solid #fff",
+                      backgroundColor: isSelected ? "#48bb78" : "#667eea",
+                      border: "3px solid #fff",
                       boxShadow: isSelected
-                        ? "0 0 0 6px rgba(0,200,83,0.25)"
-                        : "0 0 0 4px rgba(229,57,53,0.25)",
+                        ? "0 0 0 6px rgba(72,187,120,0.3), 0 4px 12px rgba(72,187,120,0.4)"
+                        : "0 0 0 4px rgba(102,126,234,0.2), 0 2px 8px rgba(102,126,234,0.3)",
                       cursor: "pointer",
                       padding: 8,
+                      transition: "all 0.3s",
                     }}
                     aria-label={fingerNames[finger.index]}
                   />
@@ -332,33 +421,244 @@ function App() {
             </div>
 
             {selectedFinger !== null && (
-              <div style={{ marginTop: 12, textAlign: "center", fontSize: 14, fontWeight: 600, color: "#00c853" }}>
-                ✓ {fingerNames[selectedFinger]}
+              <div style={{ marginTop: 16, textAlign: "center", fontSize: 15, fontWeight: 600, color: "#48bb78", padding: "10px", background: "rgba(72,187,120,0.1)", borderRadius: 8, border: "1px solid rgba(72,187,120,0.3)" }}>
+                ✓ {fingerNames[selectedFinger]} Selected
               </div>
             )}
           </div>
 
           <button 
             type="submit" 
-            disabled={cnic.length !== 13 || mobile.length !== 11 || !mobile.startsWith("03") || selectedFinger === null}
+            disabled={cnic.length !== 13 || mobile.length !== 11 || !mobile.startsWith("03") || selectedFinger === null || !capturedFingerprint || isSubmitting}
             style={{ 
               width: "100%", 
-              padding: "12px", 
-              background: (cnic.length === 13 && mobile.length === 11 && mobile.startsWith("03") && selectedFinger !== null) ? "#007bff" : "#ccc", 
+              padding: "14px", 
+              background: (cnic.length === 13 && mobile.length === 11 && mobile.startsWith("03") && selectedFinger !== null && capturedFingerprint && !isSubmitting) ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" : "#cbd5e0", 
               color: "#fff", 
               border: "none", 
-              borderRadius: 6, 
+              borderRadius: 12, 
               fontSize: "16px", 
-              fontWeight: 600, 
-              cursor: (cnic.length === 13 && mobile.length === 11 && mobile.startsWith("03") && selectedFinger !== null) ? "pointer" : "not-allowed",
-              transition: "background 0.2s"
+              fontWeight: 700, 
+              cursor: (cnic.length === 13 && mobile.length === 11 && mobile.startsWith("03") && selectedFinger !== null && capturedFingerprint && !isSubmitting) ? "pointer" : "not-allowed",
+              transition: "all 0.3s",
+              boxShadow: (cnic.length === 13 && mobile.length === 11 && mobile.startsWith("03") && selectedFinger !== null && capturedFingerprint && !isSubmitting) ? "0 8px 20px rgba(102,126,234,0.4)" : "none",
+              letterSpacing: "0.5px"
+            }}
+            onMouseEnter={(e) => {
+              if (cnic.length === 13 && mobile.length === 11 && mobile.startsWith("03") && selectedFinger !== null) {
+                e.target.style.transform = "translateY(-2px)";
+                e.target.style.boxShadow = "0 12px 28px rgba(102,126,234,0.5)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = (cnic.length === 13 && mobile.length === 11 && mobile.startsWith("03") && selectedFinger !== null) ? "0 8px 20px rgba(102,126,234,0.4)" : "none";
             }}
           >
-            Submit
-
+            Verify & Submit
           </button>
         </form>
       </div>
+      </div>
+
+      {/* Modal for captured fingerprint and success */}
+      {showModal && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px'
+          }}
+          onClick={() => setShowModal(false)}
+        >
+          <div 
+            style={{
+              background: '#fff',
+              borderRadius: 16,
+              padding: '32px',
+              maxWidth: 500,
+              width: '100%',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+              position: 'relative'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowModal(false)}
+              style={{
+                position: 'absolute',
+                top: 16,
+                right: 16,
+                background: 'transparent',
+                border: 'none',
+                fontSize: '24px',
+                cursor: 'pointer',
+                color: '#718096',
+                padding: '4px 8px'
+              }}
+            >
+              ×
+            </button>
+
+            {modalType === 'capture' && capturedFingerprint && (
+              <div style={{ textAlign: 'center' }}>
+                <h3 style={{ marginBottom: '20px', color: '#2d3748', fontSize: '22px', fontWeight: 700 }}>Fingerprint Captured</h3>
+                <div style={{ 
+                  border: '2px solid #e2e8f0', 
+                  borderRadius: 12, 
+                  padding: '16px', 
+                  background: '#f7fafc',
+                  marginBottom: '20px'
+                }}>
+                  <img 
+                    src={`data:image/png;base64,${capturedFingerprint}`} 
+                    alt="Captured Fingerprint" 
+                    style={{ 
+                      maxWidth: '100%', 
+                      height: 'auto',
+                      borderRadius: 8
+                    }} 
+                  />
+                </div>
+                <p style={{ color: '#718096', marginBottom: '20px', fontSize: '14px' }}>Fingerprint captured successfully. Click OK to continue.</p>
+                <button
+                  onClick={() => setShowModal(false)}
+                  style={{
+                    padding: '10px 24px',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 8,
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(102,126,234,0.4)'
+                  }}
+                >
+                  OK
+                </button>
+              </div>
+            )}
+
+            {modalType === 'error' && (
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ 
+                  fontSize: '60px', 
+                  marginBottom: '20px',
+                  color: '#e53935'
+                }}>⚠️</div>
+                <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Error</h3>
+                <p style={{ color: '#718096', marginBottom: '24px', fontSize: '15px' }}>{modalMessage}</p>
+                <button
+                  onClick={() => setShowModal(false)}
+                  style={{
+                    padding: '12px 32px',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 8,
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(102,126,234,0.4)'
+                  }}
+                >
+                  OK
+                </button>
+              </div>
+            )}
+
+            {modalType === 'success' && (
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ 
+                  fontSize: '60px', 
+                  marginBottom: '20px',
+                  color: '#48bb78'
+                }}>✓</div>
+                <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Verification Successful!</h3>
+                <p style={{ color: '#718096', marginBottom: '24px', fontSize: '15px' }}>Your NADRA verification has been completed successfully.</p>
+                <div style={{
+                  background: '#f0fff4',
+                  border: '1px solid #9ae6b4',
+                  borderRadius: 8,
+                  padding: '12px',
+                  marginBottom: '24px',
+                  textAlign: 'left'
+                }}>
+                  <p style={{ margin: '4px 0', fontSize: '14px', color: '#2d3748' }}><strong>CNIC:</strong> {cnic}</p>
+                  <p style={{ margin: '4px 0', fontSize: '14px', color: '#2d3748' }}><strong>Mobile:</strong> {mobile}</p>
+                  <p style={{ margin: '4px 0', fontSize: '14px', color: '#2d3748' }}><strong>Finger:</strong> {fingerNames[selectedFinger]}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowModal(false);
+                    // Reset form if needed
+                    // setCnic("");
+                    // setMobile("");
+                    // setSelectedFinger(null);
+                    // setCapturedFingerprint(null);
+                  }}
+                  style={{
+                    padding: '12px 32px',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 8,
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(102,126,234,0.4)'
+                  }}
+                >
+                  Done
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {(isCapturing || isSubmitting) && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 2000,
+          flexDirection: 'column'
+        }}>
+          <div style={{
+            width: 50,
+            height: 50,
+            border: '4px solid #f3f3f3',
+            borderTop: '4px solid #667eea',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }}></div>
+          <p style={{ color: '#fff', marginTop: 16, fontSize: 16 }}>
+            {isCapturing ? 'Capturing fingerprint...' : 'Submitting verification...'}
+          </p>
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      )}
     </>
   );
 }
