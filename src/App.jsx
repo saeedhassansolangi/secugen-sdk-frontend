@@ -386,7 +386,7 @@ const handleRetry = () => {
             <h3 style={{ textAlign: "center", marginBottom: "8px", fontSize: "18px", color: "#2d3748", fontWeight: "700" }}>Select Finger</h3>
 
             {selectedFinger && (
-              <p style={{ textAlign: "center", fontSize: "13px", color: "#48bb78", marginBottom: "12px" }}>Selected: {fingerNames[selectedFinger]} {selectedFinger} isCapturing:{isCapturing}</p>
+              <p style={{ textAlign: "center", fontSize: "13px", color: "#48bb78", marginBottom: "12px" }}>Selected: {fingerNames[selectedFinger]} {selectedFinger} isCapturing:{isCapturing == true ? "YES" :"NO"}</p>
             )  
             }
             <p style={{ textAlign: "center", fontSize: "13px", color: "#718096", marginBottom: "20px" }}>Choose hand and tap the finger to scan</p>
@@ -439,8 +439,11 @@ const handleRetry = () => {
                 return (
                   <button
                     key={finger.index}
-                    onClick={() => handleFingerClick(finger.index)}
-                    disabled={isCapturing}
+                    // onClick={() => handleFingerClick(finger.index)}
+                    // disabled={isCapturing}
+                      onClick={() => {
+                        if (!isCapturing) handleFingerClick(finger.index); // Only allow the click if it's not disabled
+                }}
                     style={{
                       position: "absolute",
                       top: finger.top,
