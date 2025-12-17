@@ -781,7 +781,7 @@ const handleRetry = () => {
                 ×
               </button>
               <div style={{ textAlign: 'center' }}>
-                <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Information</h3>
+                {/* <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Information</h3> */}
                 <p style={{ color: '#718096', marginBottom: '24px', fontSize: '15px' }}>{modalMessage}</p>
                 <button
                   onClick={() => setShowModal(false)}
