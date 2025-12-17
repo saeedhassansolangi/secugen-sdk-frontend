@@ -318,7 +318,7 @@ function App() {
           <p style={{ color: "#718096", fontSize: "14px" }}>Complete the form to verify your identity</p>
         </div>
 
-        <button onClick={makeDummyCallForTest}>CALL: TEST </button>
+        {/* <button onClick={makeDummyCallForTest}>CALL: TEST </button> */}
         <form onSubmit={handleCnicSubmit}>
           {/* CNIC Field */}
           <div style={{ marginBottom: "20px" }}>
@@ -455,7 +455,7 @@ function App() {
             )}
           </div>
 
-          <button 
+          {/* <button 
             type="submit" 
             disabled={cnic.length !== 13 || mobile.length !== 11 || !mobile.startsWith("03") || selectedFinger === null || !capturedFingerprint || isSubmitting}
             style={{ 
@@ -484,7 +484,7 @@ function App() {
             }}
           >
             Verify & Submit
-          </button>
+          </button> */}
         </form>
       </div>
       </div>
@@ -670,13 +670,13 @@ function App() {
 
             {modalType === 'success' && (
               <div style={{ textAlign: 'center' }}>
-                <div style={{ 
+                {/* <div style={{ 
                   fontSize: '60px', 
                   marginBottom: '20px',
                   color: '#48bb78'
-                }}>✓</div>
-                <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Verification Successful!</h3>
-                <p style={{ color: '#718096', marginBottom: '24px', fontSize: '15px' }}>Your NADRA verification has been completed successfully.</p>
+                }}>✓</div> */}
+                {/* <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Verification Successful!</h3> */}
+                {/* <p style={{ color: '#718096', marginBottom: '24px', fontSize: '15px' }}>Your NADRA verification has been completed successfully.</p> */}
                 <div style={{
                   background: '#f0fff4',
                   border: '1px solid #9ae6b4',
