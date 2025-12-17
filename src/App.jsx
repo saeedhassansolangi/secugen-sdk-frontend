@@ -524,6 +524,9 @@ function App() {
                           channelCode: "00"
                         };
 
+                        alert("Making API Call with payload:\n" + JSON.stringify(payload, null, 2));
+
+
                         const response = await fetch('http://10.0.150.83:7075/FIngerExtract', {
                           method: 'POST',
                           headers: {
