@@ -633,52 +633,40 @@ const handleRetry = () => {
 
                         const data = await response.json();
 
-                        // Get NADRA status code from the nested response
                         const nadraStatusCode = data?.Response?.NadraResponse?.DataBackend?.responseStatus?.code;
+                        const nadraMessage = data?.Response?.NadraResponse?.DataBackend?.responseStatus?.message;
                         
-                        // Your Response Code (the one shown in the UI)
                         const responseCode = data?.Response?.Code;
                         const responseMessage = data?.Response?.Message;
                         
-                        if (responseCode === 100 || nadraStatusCode === "100") {
+                        if (nadraStatusCode === "100") {
                           // Success case
                           setApiResponse(data);
                           setModalType('success');
                           setShowModal(true);
                         } else {
-                          // Failed cases - handle based on response code
                           setApiResponse(data);
                           setModalType('error');
                           
-                          // Handle specific error codes
-                          if (responseCode === 121 || nadraStatusCode === "121") {
-                            // Invalid finger index
-                            setModalMessage(`${responseMessage || 'Invalid finger index'}`);
-                          } else if (responseCode === 122 || nadraStatusCode === "122") {
-                            // Fingerprints did not match
+                          if (nadraStatusCode === "121") {
+                            setModalMessage(`${nadraMessage || 'Invalid finger index'}`);
+                          } else if (nadraStatusCode === "122") {
                             const fingerIndex = data?.Response?.NadraResponse?.DataBackend?.fingerIndex;
                             const suggestedFingers = fingerIndex ? fingerIndex.map(idx => fingerNames[idx]).join(', ') : 'Not specified';
-                            setModalMessage(`${responseMessage || 'Fingerprints did not match'}. Try these fingers: ${suggestedFingers}`);
-                          } else if (responseCode === 142 || nadraStatusCode === "142") {
-                            // CNIC not found
-                            setModalMessage(`${responseMessage || 'CNIC not found'}. Please verify your CNIC number.`);
-                          } else if (responseCode === 155) {
-                            // No response from NADRA or Max attempts exhausted
-                            setModalMessage(`${responseMessage || 'No response from NADRA or max attempts exhausted'}`);
-                          } else if (responseCode === 400) {
-                            // Normalized error code
-                            setModalMessage(`${responseMessage || 'Request error'}`);
+                            setModalMessage(`${nadraMessage || 'Fingerprints did not match'}. Try these fingers: ${suggestedFingers}`);
+                          } else if (nadraStatusCode === "142") {
+                            setModalMessage(`${nadraMessage || 'CNIC not found'}. Please verify your CNIC number.`);
+                          } else if (nadraStatusCode === "400") {
+                            setModalMessage(`${nadraMessage || 'No response from NADRA or max attempts exhausted'}`);
+                          } else if (nadraStatusCode === "1400") {
+                            setModalMessage(`${nadraMessage || 'Request timed out'}`);
                           } else if (responseCode === 151) {
-                            // Invalid response format
                             setModalMessage(`${responseMessage || 'Invalid response format'}`);
                           } else if (responseCode === 152) {
-                            // Internal server error
                             setModalMessage(`${responseMessage || 'Internal server error'}`);
                           } else if (responseCode === 150) {
-                            // Generic verification failure
                             setModalMessage(`${responseMessage || 'Verification failed'}`);
                           } else {
-                            // Unknown error
                             setModalMessage(responseMessage || 'Verification failed. Please try again.');
                           }
                           
