@@ -606,14 +606,14 @@ const handleRetry = () => {
                           Thumb: capturedFingerprint,
                           cnic_number: cnic,
                           IndexNumber: String(selectedFinger),
-                          mobileNo: mobile,
+                          mobileNo: String(mobile),
                           areaName: "Sindh",
                           // channelCode: "00",
-                          latitude: cordinates?.Latitude || 67.0011, 
-                          longitude: cordinates?.Longitude || 24.8607,
+                          latitude: cordinates?.Latitude || String(67.0011), 
+                          longitude: cordinates?.Longitude || String(24.8607),
                           info:{
-                            rrn: "123456789123",
-                            stan: "123456",
+                            rrn:String(rrn),
+                            stan: String(rrn?.substring(6)),
                           }
                         };
 
