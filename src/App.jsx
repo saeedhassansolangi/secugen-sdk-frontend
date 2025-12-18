@@ -616,7 +616,9 @@ const handleRetry = () => {
                             stan: rrn?.substring(6),
                           }
                         };
-                        const response = await fetch('http://10.0.150.83:7075/FingerExtract', {
+
+                        alert("Payload:\n" + JSON.stringify(payload, null, 2));
+                        const response = await fetch('http://10.0.1510.83:7075/FingerExtract', {
                           method: 'POST',
                           headers: {
                             'Content-Type': 'application/json',
