@@ -112,8 +112,8 @@ const handleRetry = () => {
     setIsCapturing(true);    
     
     // show modal   
-    setModalType('info');
     setModalMessage(`Please place your ${fingerNames[index]} on the fingerprint scanner.`);
+  setModalType('info');
     setShowModal(true);
     
     if (window.Fingerprint && typeof window.Fingerprint.captureFingerprint === 'function') {
