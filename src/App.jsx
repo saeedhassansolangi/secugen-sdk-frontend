@@ -110,7 +110,7 @@ const handleRetry = () => {
           IndexNumber: "2",
           mobileNo: "03362601330",
           areaName: "Sindh",
-          channelCode: "00"
+          // channelCode: "00"
       };
 
       const response = await fetch('http://10.0.150.83:7075/FingerExtract', {
@@ -608,7 +608,7 @@ const handleRetry = () => {
                           IndexNumber: String(selectedFinger),
                           mobileNo: mobile,
                           areaName: "Sindh",
-                          channelCode: "00",
+                          // channelCode: "00",
                           latitude: cordinates?.Latitude || 67.0011, 
                           longitude: cordinates?.Longitude || 24.8607,
                           info:{
