@@ -193,30 +193,30 @@ const handleRetry = () => {
   useEffect(() => {
     handleResize(); // Initial size calculation
 
-    if (navigator.permissions && navigator.permissions.query ) {
-            navigator.permissions.query({ name: 'geolocation' })
-                .then((result) => {
-                    if ((result.state === 'denied')) {
-                        setShowGeolocationError(true);
-                    }
-                    else {
-                        navigator.geolocation.getCurrentPosition(function (position) {
-                            let cords = {};
-                            cords.Longitude = position.coords.longitude;
-                            cords.Latitude = position.coords.latitude;
-                            setCordinates(cords);
-                        });
+    // if (navigator.permissions && navigator.permissions.query ) {
+    //         navigator.permissions.query({ name: 'geolocation' })
+    //             .then((result) => {
+    //                 if ((result.state === 'denied')) {
+    //                     setShowGeolocationError(true);
+    //                 }
+    //                 else {
+    //                     navigator.geolocation.getCurrentPosition(function (position) {
+    //                         let cords = {};
+    //                         cords.Longitude = position.coords.longitude;
+    //                         cords.Latitude = position.coords.latitude;
+    //                         setCordinates(cords);
+    //                     });
 
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error occurred while checking location permission:", error);
-                    setShowGeolocationError(true);
-                })
-        }
-        else {
-            setShowGeolocationError(true);
-        }
+    //                 }
+    //             })
+    //             .catch((error) => {
+    //                 console.error("Error occurred while checking location permission:", error);
+    //                 setShowGeolocationError(true);
+    //             })
+    //     }
+    //     else {
+    //         setShowGeolocationError(true);
+    //     }
 
 
     window.addEventListener('resize', handleResize);
@@ -603,7 +603,7 @@ const handleRetry = () => {
                       const rrn = generateRRN();
                       try {
                         const payload = {
-                          // Thumb: capturedFingerprint,
+                          Thumb: capturedFingerprint,
                           cnic_number: cnic,
                           IndexNumber: String(selectedFinger),
                           mobileNo: mobile,
@@ -617,8 +617,7 @@ const handleRetry = () => {
                           }
                         };
 
-                        alert("Payload:\n" + JSON.stringify(payload, null, 2));
-                        const response = await fetch('http://10.0.1510.83:7075/FingerExtract', {
+                        const response = await fetch('http://10.0.150.83:7075/FingerExtract', {
                           method: 'POST',
                           headers: {
                             'Content-Type': 'application/json',
@@ -733,7 +732,7 @@ const handleRetry = () => {
                   </div>
                 )}
 
-                {apiResponse && (
+                {/* {apiResponse && (
                   <div style={{
                     background: '#f7fafc',
                     border: '1px solid #e2e8f0',
@@ -756,7 +755,7 @@ const handleRetry = () => {
                       {JSON.stringify(apiResponse, null, 2)}
                     </pre>
                   </div>
-                )}
+                )} */}
                 
                 <button
                   onClick={() => setShowModal(false)}
