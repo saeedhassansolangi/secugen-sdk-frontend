@@ -612,8 +612,8 @@ const handleRetry = () => {
                           latitude: cordinates?.Latitude || 67.0011, 
                           longitude: cordinates?.Longitude || 24.8607,
                           info:{
-                            rrn: rrn,
-                            stan: rrn?.substring(6),
+                            rrn: "123456789123",
+                            stan: "123456",
                           }
                         };
 
