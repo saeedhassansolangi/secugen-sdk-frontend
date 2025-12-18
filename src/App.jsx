@@ -112,8 +112,8 @@ const handleRetry = () => {
     setIsCapturing(true);    
     
     // show modal   
-    setModalMessage(`Please place your ${fingerNames[index]} on the fingerprint scanner.`);
     setModalType('info');
+    setModalMessage(`Please place your ${fingerNames[index]} on the fingerprint scanner.`);
     setShowModal(true);
     
     if (window.Fingerprint && typeof window.Fingerprint.captureFingerprint === 'function') {
@@ -487,7 +487,8 @@ const handleRetry = () => {
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 1000,
-            padding: '20px'
+            padding: '20px',
+            overflowY: 'auto'
           }}
           onClick={() => setShowModal(false)}
         >
@@ -498,8 +499,11 @@ const handleRetry = () => {
               padding: '32px',
               maxWidth: 500,
               width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
               boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
-              position: 'relative'
+              position: 'relative',
+              margin: 'auto'
             }}
             onClick={(e) => e.stopPropagation()}
           >
