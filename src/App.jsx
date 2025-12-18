@@ -438,7 +438,7 @@ const handleRetry = () => {
               </div>
             )}
           </div>
-
+{/* 
            <button 
             type="submit" 
             disabled={cnic.length !== 13 || mobile.length !== 11 || !mobile.startsWith("03") || selectedFinger === null || !capturedFingerprint || isSubmitting}
@@ -468,7 +468,7 @@ const handleRetry = () => {
             }}
           >
             Verify & Submit
-          </button>
+          </button> */}
         </div>
       </div>
       </div>
@@ -672,9 +672,6 @@ const handleRetry = () => {
                     <p style={{ margin: '4px 0', fontSize: '13px', color: '#2d3748' }}>
                       <strong>Error Code:</strong> {apiResponse.Response.Code}
                     </p>
-                    <p style={{ margin: '4px 0', fontSize: '13px', color: '#2d3748' }}>
-                      <strong>Session ID:</strong> {apiResponse?.Response?.NadraResponse?.DataBackend?.sessionid || 'N/A'}
-                    </p>
                   </div>
                 )}
 
@@ -772,7 +769,6 @@ const handleRetry = () => {
                   <p style={{ margin: '4px 0', fontSize: '13px', color: '#2d3748' }}><strong>CNIC:</strong> {cnic}</p>
                   <p style={{ margin: '4px 0', fontSize: '13px', color: '#2d3748' }}><strong>Mobile:</strong> {mobile}</p>
                   <p style={{ margin: '4px 0', fontSize: '13px', color: '#2d3748' }}><strong>Finger:</strong> {fingerNames[selectedFinger]}</p>
-                  <p style={{ margin: '4px 0', fontSize: '13px', color: '#2d3748' }}><strong>Session ID:</strong> {apiResponse?.Response?.NadraResponse?.DataBackend?.sessionid}</p>
                 </div>
                 {apiResponse && (
                   <div style={{
@@ -877,7 +873,7 @@ const handleRetry = () => {
                 ×
               </button>
               {/* <div style={{ textAlign: 'center' }}> */}
-                {/* <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Information</h3> */}
+                <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Information</h3>
                 <p style={{ color: '#718096', marginBottom: '24px', fontSize: '15px' }}>{modalMessage}</p>
                 {/* <button
                   onClick={() => setShowModal(false)}
