@@ -648,9 +648,21 @@ const handleRetry = () => {
                           setModalType('error');
                           
                           if (nadraStatusCode === "121") {
-                            setModalMessage(`${nadraMessage || 'Invalid finger index'}`);
+                            const fingerIndex = data?.Response?.NadraResponse?.DataBackend?.fingerIndex;
+                            if(!fingerIndex){
+                              setModalMessage(`${nadraMessage || 'Invalid finger index'}`);
+                              setShowModal(true);
+                              return;
+                            } 
+                            const suggestedFingers = fingerIndex ? fingerIndex.map(idx => fingerNames[idx]).join(', ') : 'Not specified';
+                            setModalMessage(`${nadraMessage || 'Invalid finger index'}. Try these fingers: ${suggestedFingers}`);
                           } else if (nadraStatusCode === "122") {
                             const fingerIndex = data?.Response?.NadraResponse?.DataBackend?.fingerIndex;
+                            if(!fingerIndex){
+                              setModalMessage(`${nadraMessage || 'Fingerprints did not match'}`);
+                              setShowModal(true);
+                              return;
+                            }
                             const suggestedFingers = fingerIndex ? fingerIndex.map(idx => fingerNames[idx]).join(', ') : 'Not specified';
                             setModalMessage(`${nadraMessage || 'Fingerprints did not match'}. Try these fingers: ${suggestedFingers}`);
                           } else if (nadraStatusCode === "142") {
