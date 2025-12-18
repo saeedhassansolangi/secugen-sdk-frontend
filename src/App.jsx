@@ -113,7 +113,7 @@ const handleRetry = () => {
     
     // show modal   
     setModalMessage(`Please place your ${fingerNames[index]} on the fingerprint scanner.`);
-  setModalType('info');
+    setModalType('info');
     setShowModal(true);
     
     if (window.Fingerprint && typeof window.Fingerprint.captureFingerprint === 'function') {
@@ -355,7 +355,7 @@ const handleRetry = () => {
             )}
 
             <p style={{ textAlign: "center", fontSize: "13px", color: "#718096", marginBottom: "20px" }}>Choose hand and tap the finger to scan</p>
-            <div style={{ display: "flex", justifyContent: "center", gap: 20, marginBottom: 20, fontSize: 12 }}>
+            <div style={{ display: "flex", justifyContent: "center", gap: 20, marginBottom: 20, fontSize: 14 }}>
               <label style={{ cursor: "pointer", padding: "8px 16px", background: hand === "right" ? "#667eea" : "#fff", color: hand === "right" ? "#fff" : "#4a5568", borderRadius: 8, fontWeight: 500, transition: "all 0.3s", border: "2px solid #667eea" }}>
                 <input
                   type="radio"
@@ -780,10 +780,10 @@ const handleRetry = () => {
               >
                 ×
               </button>
-              <div style={{ textAlign: 'center' }}>
+              {/* <div style={{ textAlign: 'center' }}> */}
                 {/* <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Information</h3> */}
-                <p style={{ color: '#718096', marginBottom: '24px', fontSize: '15px' }}>{modalMessage}</p>
-                <button
+                {/* <p style={{ color: '#718096', marginBottom: '24px', fontSize: '15px' }}>{modalMessage}</p> */}
+                {/* <button
                   onClick={() => setShowModal(false)}
                   style={{
                     padding: '12px 32px', 
@@ -799,8 +799,8 @@ const handleRetry = () => {
                   }}
                 >
                   OK
-                </button>
-              </div>
+                </button> */}
+              {/* </div> */}
             </div>
           </div>
         )
