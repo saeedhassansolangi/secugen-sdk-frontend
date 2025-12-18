@@ -45,6 +45,25 @@ const fingerNames = {
   10: "Left Little",
 };
 
+let incrementCounter = 0;
+const getIncrementCounter = () => {
+  incrementCounter++;
+  return incrementCounter.toString().padStart(4, '0'); 
+};
+
+const generateRRN = () => {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');  // Day as two digits
+  const hour = String(now.getHours()).padStart(2, '0');  // Hour as two digits
+  const minute = String(now.getMinutes()).padStart(2, '0');  // Minute as two digits
+  const second = String(now.getSeconds()).padStart(2, '0');  // Second as two digits
+  const nowDateTime = day + hour + minute + second;
+  const counter = getIncrementCounter();
+  let rrn = nowDateTime + counter;
+  rrn = rrn.padStart(12, '0');  
+  return rrn;
+};
+
 function App() {
   const [deviceStatus, setDeviceStatus] = useState('');
   const [deviceInfo, setDeviceInfo] = useState('');
@@ -68,6 +87,8 @@ function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiResponse, setApiResponse] = useState(null);
   const [retryCapture, setRetryCapture] = useState(false);
+  const [cordinates, setCordinates] = useState({ Latitude: null, Longitude:null });
+  const [showGeolocationError, setShowGeolocationError] = useState(false);
 
 const handleRetry = () => {
   setCapturedFingerprint(null);
@@ -171,6 +192,33 @@ const handleRetry = () => {
   // Detect window resize and adjust dot positions
   useEffect(() => {
     handleResize(); // Initial size calculation
+
+    if (navigator.permissions && navigator.permissions.query ) {
+            navigator.permissions.query({ name: 'geolocation' })
+                .then((result) => {
+                    if ((result.state === 'denied')) {
+                        setShowGeolocationError(true);
+                    }
+                    else {
+                        navigator.geolocation.getCurrentPosition(function (position) {
+                            let cords = {};
+                            cords.Longitude = position.coords.longitude;
+                            cords.Latitude = position.coords.latitude;
+                            setCordinates(cords);
+                        });
+
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error occurred while checking location permission:", error);
+                    setShowGeolocationError(true);
+                })
+        }
+        else {
+            setShowGeolocationError(true);
+        }
+
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
 
@@ -551,14 +599,22 @@ const handleRetry = () => {
                       handleCnicSubmit();
                       setShowModal(false);
                       setIsSubmitting(true);
+
+                      const rrn = generateRRN();
                       try {
                         const payload = {
-                          Thumb: capturedFingerprint,
+                          // Thumb: capturedFingerprint,
                           cnic_number: cnic,
                           IndexNumber: String(selectedFinger),
                           mobileNo: mobile,
                           areaName: "Sindh",
-                          channelCode: "00"
+                          channelCode: "00",
+                          latitude: cordinates?.Latitude || 67.0011, 
+                          longitude: cordinates?.Longitude || 24.8607,
+                          info:{
+                            rrn: rrn,
+                            stan: rrn?.substring(6),
+                          }
                         };
                         const response = await fetch('http://10.0.150.83:7075/FingerExtract', {
                           method: 'POST',
@@ -930,6 +986,105 @@ const handleRetry = () => {
               100% { transform: rotate(360deg); }
             }
           `}</style>
+        </div>
+      )}
+
+      {showGeolocationError && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 3000,
+            padding: '20px'
+          }}
+        >
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: 16,
+              padding: '32px',
+              maxWidth: 500,
+              width: '100%',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+              position: 'relative'
+            }}
+          >
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                width: 80,
+                height: 80,
+                background: 'linear-gradient(135deg, #f56565 0%, #c53030 100%)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 24px',
+                fontSize: '48px',
+                color: '#fff'
+              }}>
+                📍
+              </div>
+              <h3 style={{ 
+                marginBottom: '16px', 
+                color: '#2d3748', 
+                fontSize: '24px', 
+                fontWeight: 700 
+              }}>
+                Location Access Required
+              </h3>
+              <p style={{ 
+                color: '#718096', 
+                marginBottom: '24px', 
+                fontSize: '15px',
+                lineHeight: '1.6'
+              }}>
+                This application requires access to your location to proceed. Please allow location access in your browser settings.
+              </p>
+             
+              <button
+                onClick={() => {
+                  setShowGeolocationError(false);
+                  window.location.reload();
+                }}
+                style={{
+                  padding: '12px 32px',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(102,126,234,0.4)',
+                  marginRight: '12px'
+                }}
+              >
+                I've Enabled It
+              </button>
+              <button
+                onClick={() => setShowGeolocationError(false)}
+                style={{
+                  padding: '12px 32px',
+                  background: '#e2e8f0',
+                  color: '#4a5568',
+                  border: 'none',
+                  borderRadius: 8,
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </>
