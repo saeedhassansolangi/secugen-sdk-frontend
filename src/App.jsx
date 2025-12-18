@@ -637,11 +637,7 @@ const handleRetry = () => {
                         const nadraMessage = data?.Response?.NadraResponse?.DataBackend?.responseStatus?.message;
                         
                         const responseCode = data?.Response?.Code;
-                        const responseMessage = data?.Response?.Message;
-
-
-                        alert("API Response:\n" + JSON.stringify(data, null, 2));
-                        
+                        const responseMessage = data?.Response?.Message;                        
                         if (nadraStatusCode === "100") {
                           // Success case
                           setApiResponse(data);
