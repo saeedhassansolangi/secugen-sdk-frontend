@@ -337,7 +337,7 @@ const handleRetry = () => {
       <div style={{ maxWidth: 440, margin: "0 auto", padding: "32px", background: "#fff", borderRadius: 20, boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
         <div style={{ textAlign: "center", marginBottom: "32px" }}>
           <h2 style={{ color: "#2d3748", marginBottom: "8px", fontSize: "28px", fontWeight: "700", letterSpacing: "-0.5px" }}>NADRA Verification</h2>
-          <p style={{ color: "#718096", fontSize: "14px" }}>Comlete the form to verify your identity</p>
+          <p style={{ color: "#718096", fontSize: "14px" }}>Complete the form to verify your identity</p>
         </div>
 
         
@@ -807,7 +807,7 @@ const handleRetry = () => {
                 <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Verification Successful!</h3>
                 <p style={{ color: '#718096', marginBottom: '24px', fontSize: '15px' }}>NADRA verification completed successfully.</p>
                 
-                {apiResponse?.Response?.NadraResponse?.DataBackend?.persondata && (
+                {apiResponse?.Response?.NadraResponse?.DataBackend?.citizenData && (
                   <div style={{
                     background: '#f0fff4',
                     border: '1px solid #9ae6b4',
@@ -818,19 +818,22 @@ const handleRetry = () => {
                   }}>
                     <h4 style={{ margin: '0 0 12px 0', fontSize: '16px', color: '#2d3748', fontWeight: 700 }}>Person Details</h4>
                     <p style={{ margin: '6px 0', fontSize: '14px', color: '#2d3748' }}>
-                      <strong>Name:</strong> {apiResponse.Response.NadraResponse.DataBackend.persondata.name}
+                      <strong>Name:</strong> {apiResponse.Response.NadraResponse.DataBackend.citizenData.name}
                     </p>
                     <p style={{ margin: '6px 0', fontSize: '14px', color: '#2d3748' }}>
-                      <strong>Father/Husband:</strong> {apiResponse.Response.NadraResponse.DataBackend.persondata.fatherhusbandname}
+                      <strong>Mother Name:</strong> {apiResponse.Response.NadraResponse.DataBackend.citizenData.motherName}
                     </p>
                     <p style={{ margin: '6px 0', fontSize: '14px', color: '#2d3748' }}>
-                      <strong>Date of Birth:</strong> {apiResponse.Response.NadraResponse.DataBackend.persondata.dateofbirth}
+                      <strong>Date of Birth:</strong> {apiResponse.Response.NadraResponse.DataBackend.citizenData.dateofbirth}
                     </p>
                     <p style={{ margin: '6px 0', fontSize: '14px', color: '#2d3748' }}>
-                      <strong>Present Address:</strong> {apiResponse.Response.NadraResponse.DataBackend.persondata.presentaddress}
+                      <strong>Present Address:</strong> {apiResponse.Response.NadraResponse.DataBackend.citizenData.presentAddress}
                     </p>
                     <p style={{ margin: '6px 0', fontSize: '14px', color: '#2d3748' }}>
-                      <strong>Permanent Address:</strong> {apiResponse.Response.NadraResponse.DataBackend.persondata.permanantaddress}
+                      <strong>Expiry Date:</strong> {apiResponse.Response.NadraResponse.DataBackend.citizenData.expirydate}
+                    </p>
+                      <p style={{ margin: '6px 0', fontSize: '14px', color: '#2d3748' }}>
+                      <strong>Birth Place:</strong> {apiResponse.Response.NadraResponse.DataBackend.citizenData.birthPlace}
                     </p>
                   </div>
                 )}
