@@ -611,14 +611,14 @@ const handleRetry = () => {
                           // channelCode: "00",
                           // latitude: cordinates?.Latitude || String(67.0011), 
                           // longitude: cordinates?.Longitude || String(24.8607),
-                          // info:{
-                          //   rrn:String(rrn),
-                          //   stan: String(rrn?.substring(6)),
-                          // },
-                           "info": {
-                                "rnn": "123456789123",
-                                "stan": "123456"
-                            },
+                          info:{
+                            rrn:String(rrn),
+                            stan: String(rrn?.substring(6)),
+                          },
+                          //  "info": {
+                          //       "rnn": "123456789123",
+                          //       "stan": "123456"
+                          //   },
                            "longitude": "67.0011",
                            "latitude": "24.8607"
                         };
