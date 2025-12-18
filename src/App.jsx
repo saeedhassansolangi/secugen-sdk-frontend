@@ -337,7 +337,7 @@ const handleRetry = () => {
       <div style={{ maxWidth: 440, margin: "0 auto", padding: "32px", background: "#fff", borderRadius: 20, boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
         <div style={{ textAlign: "center", marginBottom: "32px" }}>
           <h2 style={{ color: "#2d3748", marginBottom: "8px", fontSize: "28px", fontWeight: "700", letterSpacing: "-0.5px" }}>NADRA Verification</h2>
-          <p style={{ color: "#718096", fontSize: "14px" }}>Complete the form to verify your identity</p>
+          <p style={{ color: "#718096", fontSize: "14px" }}>Comlete the form to verify your identity</p>
         </div>
 
         
@@ -638,6 +638,9 @@ const handleRetry = () => {
                         
                         const responseCode = data?.Response?.Code;
                         const responseMessage = data?.Response?.Message;
+
+
+                        alert("API Response:\n" + JSON.stringify(data, null, 2));
                         
                         if (nadraStatusCode === "100") {
                           // Success case
