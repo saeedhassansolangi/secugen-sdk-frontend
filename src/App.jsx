@@ -770,7 +770,7 @@ const handleRetry = () => {
                   <p style={{ margin: '4px 0', fontSize: '13px', color: '#2d3748' }}><strong>Mobile:</strong> {mobile}</p>
                   <p style={{ margin: '4px 0', fontSize: '13px', color: '#2d3748' }}><strong>Finger:</strong> {fingerNames[selectedFinger]}</p>
                 </div>
-                {apiResponse && (
+                {/* {apiResponse && (
                   <div style={{
                     background: '#f7fafc',
                     border: '1px solid #e2e8f0',
@@ -793,7 +793,7 @@ const handleRetry = () => {
                       {JSON.stringify(apiResponse, null, 2)}
                     </pre>
                   </div>
-                )}
+                )} */}
                 <button
                   onClick={() => {
                     setShowModal(false);
@@ -872,7 +872,7 @@ const handleRetry = () => {
               >
                 ×
               </button>
-              {/* <div style={{ textAlign: 'center' }}> */}
+              <div style={{ textAlign: 'center' }}>
                 <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Information</h3>
                 <p style={{ color: '#718096', marginBottom: '24px', fontSize: '15px' }}>{modalMessage}</p>
                 {/* <button
@@ -892,7 +892,7 @@ const handleRetry = () => {
                 >
                   OK
                 </button> */}
-              {/* </div> */}
+              </div>
             </div>
           </div>
         )
