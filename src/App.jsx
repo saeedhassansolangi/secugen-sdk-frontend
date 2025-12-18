@@ -566,14 +566,31 @@ const handleRetry = () => {
 
                         const data = await response.json();
 
-                        if (response.ok) {
+                        // Check the Response.Code to determine success/failure
+                        const responseCode = data?.Response?.Code;
+                        const responseMessage = data?.Response?.Message;
+                        
+                        if (responseCode === 100) {
+                          // Success case
                           setApiResponse(data);
                           setModalType('success');
                           setShowModal(true);
                         } else {
+                          // Failed cases (122, 142, etc.)
                           setApiResponse(data);
                           setModalType('error');
-                          setModalMessage(`API Error: ${data.message || 'Verification failed'}`);
+                          
+                          // Handle specific error codes
+                          if (responseCode === 122) {
+                            const fingerIndex = data?.Response?.NadraResponse?.DataBackend?.fingerindex?.finger;
+                            const suggestedFingers = fingerIndex ? fingerIndex.map(idx => fingerNames[idx]).join(', ') : 'Not specified';
+                            setModalMessage(`${responseMessage}. Try these fingers: ${suggestedFingers}`);
+                          } else if (responseCode === 142) {
+                            setModalMessage(`${responseMessage}. Please verify your CNIC number.`);
+                          } else {
+                            setModalMessage(responseMessage || 'Verification failed');
+                          }
+                          
                           setShowModal(true);
                         }
                       } catch (error) {
@@ -636,8 +653,52 @@ const handleRetry = () => {
                   marginBottom: '20px',
                   color: '#e53935'
                 }}>⚠️</div>
-                <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Error</h3>
+                <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Verification Failed</h3>
                 <p style={{ color: '#718096', marginBottom: '24px', fontSize: '15px' }}>{modalMessage}</p>
+                
+                {apiResponse?.Response?.Code && (
+                  <div style={{
+                    background: '#fff3f3',
+                    border: '1px solid #ffcdd2',
+                    borderRadius: 8,
+                    padding: '12px',
+                    marginBottom: '16px',
+                    textAlign: 'left'
+                  }}>
+                    <p style={{ margin: '4px 0', fontSize: '13px', color: '#2d3748' }}>
+                      <strong>Error Code:</strong> {apiResponse.Response.Code}
+                    </p>
+                    <p style={{ margin: '4px 0', fontSize: '13px', color: '#2d3748' }}>
+                      <strong>Session ID:</strong> {apiResponse?.Response?.NadraResponse?.DataBackend?.sessionid || 'N/A'}
+                    </p>
+                  </div>
+                )}
+
+                {apiResponse && (
+                  <div style={{
+                    background: '#f7fafc',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: 8,
+                    padding: '16px',
+                    marginBottom: '24px',
+                    textAlign: 'left',
+                    maxHeight: '300px',
+                    overflowY: 'auto'
+                  }}>
+                    <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#2d3748', fontWeight: 600 }}>Full API Response:</h4>
+                    <pre style={{
+                      margin: 0,
+                      fontSize: '12px',
+                      color: '#4a5568',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                      fontFamily: 'monospace'
+                    }}>
+                      {JSON.stringify(apiResponse, null, 2)}
+                    </pre>
+                  </div>
+                )}
+                
                 <button
                   onClick={() => setShowModal(false)}
                   style={{
@@ -659,24 +720,55 @@ const handleRetry = () => {
 
             {modalType === 'success' && (
               <div style={{ textAlign: 'center' }}>
-                {/* <div style={{ 
+                <div style={{ 
                   fontSize: '60px', 
                   marginBottom: '20px',
                   color: '#48bb78'
-                }}>✓</div> */}
-                {/* <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Verification Successful!</h3> */}
-                {/* <p style={{ color: '#718096', marginBottom: '24px', fontSize: '15px' }}>Your NADRA verification has been completed successfully.</p> */}
+                }}>✓</div>
+                <h3 style={{ marginBottom: '16px', color: '#2d3748', fontSize: '24px', fontWeight: 700 }}>Verification Successful!</h3>
+                <p style={{ color: '#718096', marginBottom: '24px', fontSize: '15px' }}>NADRA verification completed successfully.</p>
+                
+                {apiResponse?.Response?.NadraResponse?.DataBackend?.persondata && (
+                  <div style={{
+                    background: '#f0fff4',
+                    border: '1px solid #9ae6b4',
+                    borderRadius: 8,
+                    padding: '16px',
+                    marginBottom: '16px',
+                    textAlign: 'left'
+                  }}>
+                    <h4 style={{ margin: '0 0 12px 0', fontSize: '16px', color: '#2d3748', fontWeight: 700 }}>Person Details</h4>
+                    <p style={{ margin: '6px 0', fontSize: '14px', color: '#2d3748' }}>
+                      <strong>Name:</strong> {apiResponse.Response.NadraResponse.DataBackend.persondata.name}
+                    </p>
+                    <p style={{ margin: '6px 0', fontSize: '14px', color: '#2d3748' }}>
+                      <strong>Father/Husband:</strong> {apiResponse.Response.NadraResponse.DataBackend.persondata.fatherhusbandname}
+                    </p>
+                    <p style={{ margin: '6px 0', fontSize: '14px', color: '#2d3748' }}>
+                      <strong>Date of Birth:</strong> {apiResponse.Response.NadraResponse.DataBackend.persondata.dateofbirth}
+                    </p>
+                    <p style={{ margin: '6px 0', fontSize: '14px', color: '#2d3748' }}>
+                      <strong>Present Address:</strong> {apiResponse.Response.NadraResponse.DataBackend.persondata.presentaddress}
+                    </p>
+                    <p style={{ margin: '6px 0', fontSize: '14px', color: '#2d3748' }}>
+                      <strong>Permanent Address:</strong> {apiResponse.Response.NadraResponse.DataBackend.persondata.permanantaddress}
+                    </p>
+                  </div>
+                )}
+                
                 <div style={{
-                  background: '#f0fff4',
-                  border: '1px solid #9ae6b4',
+                  background: '#e6f4ff',
+                  border: '1px solid #91d5ff',
                   borderRadius: 8,
                   padding: '12px',
                   marginBottom: '24px',
                   textAlign: 'left'
                 }}>
-                  <p style={{ margin: '4px 0', fontSize: '14px', color: '#2d3748' }}><strong>CNIC:</strong> {cnic}</p>
-                  <p style={{ margin: '4px 0', fontSize: '14px', color: '#2d3748' }}><strong>Mobile:</strong> {mobile}</p>
-                  <p style={{ margin: '4px 0', fontSize: '14px', color: '#2d3748' }}><strong>Finger:</strong> {fingerNames[selectedFinger]}</p>
+                  <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#2d3748', fontWeight: 600 }}>Verification Info</h4>
+                  <p style={{ margin: '4px 0', fontSize: '13px', color: '#2d3748' }}><strong>CNIC:</strong> {cnic}</p>
+                  <p style={{ margin: '4px 0', fontSize: '13px', color: '#2d3748' }}><strong>Mobile:</strong> {mobile}</p>
+                  <p style={{ margin: '4px 0', fontSize: '13px', color: '#2d3748' }}><strong>Finger:</strong> {fingerNames[selectedFinger]}</p>
+                  <p style={{ margin: '4px 0', fontSize: '13px', color: '#2d3748' }}><strong>Session ID:</strong> {apiResponse?.Response?.NadraResponse?.DataBackend?.sessionid}</p>
                 </div>
                 {apiResponse && (
                   <div style={{
